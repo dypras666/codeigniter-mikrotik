@@ -1,0 +1,1 @@
+while (1) {curl http://mikrotik.test:9999/save_stat ; sleep 5}
