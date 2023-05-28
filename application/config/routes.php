@@ -55,5 +55,6 @@ $route['monitoring'] = 'mikrotik/monitoring';
 $route['bandwidth'] = 'mikrotik/bandwidth';
 $route['live_stat'] = 'mikrotik/live_stat';
 $route['save_stat'] = 'mikrotik/save_stat';
+$route['log'] = 'mikrotik/log';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;

@@ -8,36 +8,36 @@ class Mikrotik extends CI_Controller {
 		$this->connect = 		$this->routerapi->connect('192.168.88.1','admin','masuk123');
         $this->firebase_url = "https://mikrotik-98046-default-rtdb.asia-southeast1.firebasedatabase.app/";
         $this->firebase_api = "bb6duQ2qXHwjYzp1Umm9Fs8WzLcegwUXUMXGFN6a";
-		 
+		  
 	}
 			
 	public function index()
-	{		
-        $connect =$this->connect  ;	 
-        $data = array();
+	{		  
+		$data = array(
+						'total' => count($this->interface()),
+						'useronline' => count($this->routerapi->comm("/ip/hotspot/active/print")
+					));
 		$this->load->view('template_sbadmin/header', $data);
 		$this->load->view('template_sbadmin/sidebar', $data);
 		$this->load->view('template_sbadmin/menu', $data);
 		$this->load->view('mikrotik/index', $data);
 		$this->load->view('template_sbadmin/footer', $data);
 	}
-	
+
+
+	public function log()
+	{		
+        $data = array();
+		$this->load->view('template_sbadmin/header', $data);
+		$this->load->view('template_sbadmin/sidebar', $data);
+		$this->load->view('template_sbadmin/menu', $data);
+		$this->load->view('mikrotik/log', $data);
+		$this->load->view('template_sbadmin/footer', $data);
+	}
+	 
     public function monitoring()
 	{		
-        $connect = $this->connect;	   
-        $interface = $this->routerapi->comm('/interface/print');
-        foreach($interface as $v){
-            $network = $this->routerapi->comm('/interface/monitor-traffic',array(
-                'interface' => $v['name'],
-                'once' =>''
-            ));
-            $data['live_stat'][] = array(
-                    'interface' => $v['name'],
-                    'rx' =>  $network[0]['rx-bits-per-second'],
-                    'tx' => $network[0]['tx-bits-per-second']
-            );
-        }
-
+        $data = array();
 		$this->load->view('template_sbadmin/header', $data);
 		$this->load->view('template_sbadmin/sidebar', $data);
 		$this->load->view('template_sbadmin/menu', $data);
@@ -100,13 +100,36 @@ class Mikrotik extends CI_Controller {
         echo json_encode($data);
 	}
 
+	public function interface()
+	{
+		$connect = $this->connect;	   
+        $interface = $this->routerapi->comm('/interface/print');
+		$no=0;  
+		foreach($interface as $v){
+            $network = $this->routerapi->comm('/interface/monitor-traffic',array(
+                'interface' => $v['name'],
+                'once' =>''
+            ));
+            $data_internet[] = array(
+                    'no' => $no+1,
+                    'name' => $v['name'],
+                    'rx' => formatBytes($network[0]['rx-bits-per-second']),
+                    'tx' => formatBytes($network[0]['tx-bits-per-second']) ,
+					 
+            );
+            $no++;
+        }
+		return $data_internet;
+	}
+	
     public function live_stat()
     {
         // header('Content-Type: application/json');
         $connect = $this->connect;	   
         $interface = $this->routerapi->comm('/interface/print');
        
-        $no=0;  foreach($interface as $v){
+        $no=0;  
+		foreach($interface as $v){
             $network = $this->routerapi->comm('/interface/monitor-traffic',array(
                 'interface' => $v['name'],
                 'once' =>''
@@ -139,6 +162,43 @@ class Mikrotik extends CI_Controller {
         $data['data'] =  $data_internet;
         echo json_encode($data);
     }
+
+	public function dt_log()
+	{
+		$connect = $this->connect;	   
+		$log = $this->routerapi->comm("/log/print");  
+        $no=0;  
+		foreach($log as $v){            
+            $data_log[] = array(
+                    'id' => $v['.id'],
+                    'time' => $v['time'], 
+                    'topics' => $v['topics'], 
+                    'message' => $v['message'], 
+					 
+            );
+            $no++;
+        }
+		array_multisort($data_log, SORT_DESC, $log);
+        $data['recordsTotal'] = count($data_log);
+        $data['recordsFiltered'] = count($data_log);
+
+		$page = ! empty( $_GET['start'] ) ? (int) $_GET['start'] : 1;
+		$total = count($data_log);  
+		$limit = $_GET['length']; 
+		$totalPages = ceil( $total/ $limit );  
+		$page = max($page, 1);  
+		$page = min($page, $totalPages);  
+		$offset = ($page - 1) * $limit;
+		if( $offset < 0 ) $offset = 0;
+		$data_log = array_slice( $data_log, $offset, $limit );
+		if($_GET['search']['value']){
+			$data_log= $this->searchData($_GET['search']['value'] ,$data_log);
+			 
+		} 
+        $data['data'] =  $data_log;
+        echo json_encode($data);
+		 
+	}
 
 	 
 	 

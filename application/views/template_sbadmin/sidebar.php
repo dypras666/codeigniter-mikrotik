@@ -42,9 +42,23 @@
                 
             </li>
             <li class="nav-item <?= $this->uri->segment(1) == "user" ? "active" : ""?>">
-                <a class="nav-link    "  href="<?= base_url('user')?>">
+                <a class="nav-link   "  href="<?= base_url('user')?>">
                     <i class="fas fa-fw fa-users"></i>
                     <span>User</span>
+                </a>
+                
+            </li>
+            <li class="nav-item <?= $this->uri->segment(1) == "log" ? "active" : ""?>">
+                <a class="nav-link   "  href="<?= base_url('log')?>">
+                    <i class="fas fa-fw fa-file-pdf"></i>
+                    <span>Log Aktivitas</span>
+                </a>
+                
+            </li>
+            <li class="nav-item <?= $this->uri->segment(1) == "hotspot" ? "active" : ""?>">
+                <a class="nav-link   "  href="<?= base_url('hotspot')?>">
+                    <i class="fas fa-fw fa-wifi"></i>
+                    <span>Profil Hotspot</span>
                 </a>
                 
             </li>
