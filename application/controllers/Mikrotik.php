@@ -15,10 +15,11 @@ class Mikrotik extends CI_Controller {
 	{		
         $connect =$this->connect  ;	 
         $data = array();
-		$this->load->view('template/header', $data);
-		$this->load->view('template/sidebar', $data);
+		$this->load->view('template_sbadmin/header', $data);
+		$this->load->view('template_sbadmin/sidebar', $data);
+		$this->load->view('template_sbadmin/menu', $data);
 		$this->load->view('mikrotik/index', $data);
-		$this->load->view('template/footer', $data);
+		$this->load->view('template_sbadmin/footer', $data);
 	}
 	
     public function monitoring()
@@ -37,19 +38,21 @@ class Mikrotik extends CI_Controller {
             );
         }
 
-		$this->load->view('template/header', $data);
-		$this->load->view('template/sidebar', $data);
+		$this->load->view('template_sbadmin/header', $data);
+		$this->load->view('template_sbadmin/sidebar', $data);
+		$this->load->view('template_sbadmin/menu', $data);
 		$this->load->view('mikrotik/monitoring', $data);
-		$this->load->view('template/footer', $data);
+		$this->load->view('template_sbadmin/footer', $data);
 	}
     public function bandwidth()
 	{		
         $connect = $this->connect;	 
         $data = array();
-		$this->load->view('template/header', $data);
-		$this->load->view('template/sidebar', $data);
-		$this->load->view('mikrotik/index', $data);
-		$this->load->view('template/footer', $data);
+		$this->load->view('template_sbadmin/header', $data);
+		$this->load->view('template_sbadmin/menu', $data);
+		$this->load->view('template_sbadmin/sidebar', $data);
+		$this->load->view('mikrotik/bandwidth', $data);
+		$this->load->view('template_sbadmin/footer', $data);
 	}
 			
 	public function user()
@@ -62,10 +65,39 @@ class Mikrotik extends CI_Controller {
 			$this->routerapi->disconnect();		  
             $data['hotspot_users'] = $hotspot_users;
 		} 	 
-		$this->load->view('template/header', $data);
-		$this->load->view('template/sidebar', $data);
+		$this->load->view('template_sbadmin/header', $data);
+		$this->load->view('template_sbadmin/sidebar', $data);
+		$this->load->view('template_sbadmin/menu', $data);
 		$this->load->view('mikrotik/user', $data);
-		$this->load->view('template/footer', $data);
+		$this->load->view('template_sbadmin/footer', $data);
+	}
+
+	public function dt_users()
+	{
+		$connect = $this->connect;	   
+        $this->routerapi->write('/ip/hotspot/user/getall');
+		$hotspot_users = $this->routerapi->read();
+		$this->routerapi->disconnect();		   
+ 
+        $no=0;  
+		foreach($hotspot_users as $user){  
+            $data_internet[] = array(
+                    '0' => $no+1,
+                    '1' => @$user['server'],
+                    '2' => @$user['name'],
+                    '3' => @$user['password'],
+					'4'	=> @$user['mac-address'],
+					'5' => @$user['profile'],
+					'6' => @$user['comment'],
+					'7' => $GET['start'],
+					'8' => $GET['length'],
+            );
+            $no++;
+        }
+        $data['recordsTotal'] = count($data_internet);
+        $data['recordsFiltered'] = count($data_internet);
+        $data['data'] =  $data_internet;
+        echo json_encode($data);
 	}
 
     public function live_stat()
@@ -80,18 +112,53 @@ class Mikrotik extends CI_Controller {
                 'once' =>''
             ));
             $data_internet[] = array(
-                    '0' => $no+1,
-                    '1' => $v['name'],
-                    '2' => formatBytes($network[0]['rx-bits-per-second']),
-                    '3' => formatBytes($network[0]['tx-bits-per-second'])
+                    'no' => $no+1,
+                    'name' => $v['name'],
+                    'rx' => formatBytes($network[0]['rx-bits-per-second']),
+                    'tx' => formatBytes($network[0]['tx-bits-per-second']) ,
+					 
             );
             $no++;
         }
         $data['recordsTotal'] = count($data_internet);
         $data['recordsFiltered'] = count($data_internet);
+
+		$page = ! empty( $_GET['start'] ) ? (int) $_GET['start'] : 1;
+		$total = count($data_internet);  
+		$limit = $_GET['length']; 
+		$totalPages = ceil( $total/ $limit );  
+		$page = max($page, 1);  
+		$page = min($page, $totalPages);  
+		$offset = ($page - 1) * $limit;
+		if( $offset < 0 ) $offset = 0;
+		$data_internet = array_slice( $data_internet, $offset, $limit );
+		if($_GET['search']['value']){
+			$data_internet= $this->searchData($_GET['search']['value'] ,$data_internet);
+			 
+		} 
         $data['data'] =  $data_internet;
         echo json_encode($data);
     }
+
+	 
+	 
+	function searchData($id, $array) {
+	 
+		foreach ($array as $key => $val) {
+			//  var_dump($id);
+			if ($val['name'] === $id) { 
+				 return array(
+					array(
+					'no' => 1,
+					'name' => $val['name'],
+					'rx' => $val['rx'],
+					'tx' => $val['tx']
+					)
+				);
+			}
+		}
+		return null;
+	 }
 
     public function get_data()
 	{

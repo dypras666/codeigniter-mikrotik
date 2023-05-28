@@ -1,19 +1,17 @@
-<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Data User Jaringan</h1>
-        <div class="btn-toolbar mb-2 mb-md-0">
-          <div class="btn-group me-2">
-            <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
-            <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
-          </div>
-          <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
-            <span data-feather="calendar" class="align-text-bottom"></span>
-            This week
-          </button>
-        </div>
-      </div> 
+<div class="container-fluid">
+          <h1 class="h3 mb-0 text-gray-800">User</h1>
+          <p class="mb-4">Data User pengguna jaringan.</p>
+     
+<div class="row">
+<div class="col-xl-12">
+  <a class="btn btn-primary" href="#">Tambah User</a>
+  <div class="card shadow mb-4">
+  <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">Manajemen User</h6>
+  </div>
+  <div class="card-body">
 <div class="table-responsive">
-<table class="table table-striped table-sm">
+<table class="table table-striped table-sm" id="datatables">
 <thead>
 <tr>
     <th scope="col">NO</th>
@@ -54,7 +52,8 @@
 }?>
 </tbody>
 </table>
+</div> 
+  </div>
 </div>
-    </main>
   </div>
 </div>
