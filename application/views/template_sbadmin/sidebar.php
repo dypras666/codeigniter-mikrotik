@@ -55,8 +55,8 @@
                 </a>
                 
             </li>
-            <li class="nav-item <?= $this->uri->segment(1) == "log_user_jaringan" ? "active" : ""?>">
-                <a class="nav-link   "  href="<?= base_url('log_user_jaringan')?>">
+            <li class="nav-item <?= $this->uri->segment(1) == "dhcp_leasesn" ? "active" : ""?>">
+                <a class="nav-link   "  href="<?= base_url('dhcp_leases')?>">
                     <i class="fas fa-fw fa-wifi"></i>
                     <span>Log User Jaringan</span>
                 </a>

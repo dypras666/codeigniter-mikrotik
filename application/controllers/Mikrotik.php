@@ -44,6 +44,18 @@ class Mikrotik extends CI_Controller {
 		$this->load->view('mikrotik/monitoring', $data);
 		$this->load->view('template_sbadmin/footer', $data);
 	}
+	
+	 
+    public function dhcp_leases()
+	{		
+        $data = array();
+		$this->load->view('template_sbadmin/header', $data);
+		$this->load->view('template_sbadmin/sidebar', $data);
+		$this->load->view('template_sbadmin/menu', $data);
+		$this->load->view('mikrotik/dhcp_leases', $data);
+		$this->load->view('template_sbadmin/footer', $data);
+	}
+
     public function bandwidth()
 	{		
         $connect = $this->connect;	 
@@ -222,6 +234,53 @@ class Mikrotik extends CI_Controller {
 		];
 
 		echo json_encode($rows);
+	}
+	 public function json_dhcp()
+	{ 
+		$network = $this->routerapi->comm('/ip/dhcp-server/lease/print');
+		echo json_encode($network);
+	}
+
+	public function dt_dhcp()
+	{
+		$connect = $this->connect;	   
+		$log = $this->routerapi->comm("/ip/dhcp-server/lease/print");  
+        $no=0;  
+		// var_dump($log);
+		foreach($log as $v){            
+            $data_log[] = array(
+					'no' => $no,
+                    'address' => $v['address'],
+                    'mac-address' => $v['mac-address'], 
+                    'server' => $v['server'], 
+                    'last-seen' => $v['last-seen'], 
+                    'host-name' => @$v['host-name'], 
+                    'status' => $v['status'], 
+                    'dynamic' => $v['dynamic'], 
+					 
+            );
+            $no++;
+        }
+		array_multisort($data_log, SORT_DESC, $log);
+        $data['recordsTotal'] = count($data_log);
+        $data['recordsFiltered'] = count($data_log);
+
+		$page = ! empty( $_GET['start'] ) ? (int) $_GET['start'] : 1;
+		$total = count($data_log);  
+		$limit = $_GET['length']; 
+		$totalPages = ceil( $total/ $limit );  
+		$page = max($page, 1);  
+		$page = min($page, $totalPages);  
+		$offset = ($page - 1) * $limit;
+		if( $offset < 0 ) $offset = 0;
+		$data_log = array_slice( $data_log, $offset, $limit );
+		if($_GET['search']['value']){
+			$data_log= $this->searchData($_GET['search']['value'] ,$data_log);
+			 
+		} 
+        $data['data'] =  $data_log;
+        echo json_encode($data);
+		 
 	}
 	 
 	function searchData($id, $array) {
