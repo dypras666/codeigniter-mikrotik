@@ -14,9 +14,10 @@ class Mikrotik extends CI_Controller {
 	public function index()
 	{		  
 		$data = array(
-						'total' => count($this->interface()),
-						'useronline' => count($this->routerapi->comm("/ip/hotspot/active/print")
-					));
+				'interface' =>  $this->routerapi->comm('/interface/print'),
+				'total' => count($this->interface()),
+				'useronline' => count($this->routerapi->comm("/ip/hotspot/active/print")
+			));
 		$this->load->view('template_sbadmin/header', $data);
 		$this->load->view('template_sbadmin/sidebar', $data);
 		$this->load->view('template_sbadmin/menu', $data);
