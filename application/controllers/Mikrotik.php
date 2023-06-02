@@ -12,17 +12,22 @@ class Mikrotik extends CI_Controller {
 	}
 			
 	public function index()
-	{		  
-		$data = array(
-				'interface' =>  $this->routerapi->comm('/interface/print'),
-				'total' => count($this->interface()),
-				'useronline' => count($this->routerapi->comm("/ip/hotspot/active/print")
-			));
-		$this->load->view('template_sbadmin/header', $data);
-		$this->load->view('template_sbadmin/sidebar', $data);
-		$this->load->view('template_sbadmin/menu', $data);
-		$this->load->view('mikrotik/index', $data);
-		$this->load->view('template_sbadmin/footer', $data);
+	{		
+		if($this->input->post('interface')){
+			$this->session->set_userdata('interface',$this->input->post('interface'));
+		}else{  
+			$this->session->set_userdata('interface','INTERNET');
+			$data = array(
+					'interface' =>  $this->routerapi->comm('/interface/print'),
+					'total' => count($this->interface()),
+					'useronline' => count($this->routerapi->comm("/ip/hotspot/active/print")
+				));
+			$this->load->view('template_sbadmin/header', $data);
+			$this->load->view('template_sbadmin/sidebar', $data);
+			$this->load->view('template_sbadmin/menu', $data);
+			$this->load->view('mikrotik/index', $data);
+			$this->load->view('template_sbadmin/footer', $data);
+		}
 	}
 
 
@@ -214,10 +219,13 @@ class Mikrotik extends CI_Controller {
 	}
 
 	
+	
 	public function json_traffic()
 	{ 
+		
+		$interface = $this->session->userdata('interface');
 		$network = $this->routerapi->comm('/interface/monitor-traffic',array(
-			'interface' => 'INTERNET',
+			'interface' => $interface,
 			'once' =>''
 		));
 		  
@@ -226,11 +234,13 @@ class Mikrotik extends CI_Controller {
 			
 			array(
 				'name' => 'Tx',
-				'data' => $network[0]['tx-bits-per-second']
+				'data' => $network[0]['tx-bits-per-second'],
+				'interface' => $interface
 			),
 			array(
 				'name' => 'Rx',
-				'data' => $network[0]['rx-bits-per-second']
+				'data' => $network[0]['rx-bits-per-second'],
+				'interface' => $interface
 			)
 		];
 

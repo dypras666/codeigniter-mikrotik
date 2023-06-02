@@ -60,9 +60,9 @@ var table = $('#datatables').DataTable( {
     // ]
   });
 
-//   setInterval( function () {
-//     table.ajax.reload(null,false);
-// }, 1000 );
+  setInterval( function () {
+    table.ajax.reload(null,false);
+}, 1000 );
     </script>
 
 

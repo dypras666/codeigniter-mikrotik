@@ -37,6 +37,6 @@ $config['firebase_measure'] = 'G-9KB6DRCFF5';
 
 // mikrotik
 $config['mikrotik_ip'] = '192.168.88.1';
-$config['mikrotik_port'] = 8278;
+$config['mikrotik_port'] = 8728;
 $config['mikrotik_user'] ='admin';
 $config['mikrotik_pass'] = 'masuk123';

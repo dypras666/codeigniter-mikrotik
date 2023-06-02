@@ -6,29 +6,139 @@
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
 
-                        <select name="interface" class="form-control" id="">
+                      
+                    </div>
+
+                  <div class="row">
+                    <div class="col-md-4">  <select name="interface" class="form-control" id="interface" onchange="filter()">
                           <?php foreach ($interface as $v) {
-                            echo '<option value="'.$v['name'].'">'.$v['name'].'</option>';
+                            echo '<option data-interface="'.$v['name'].'" value="'.$v['name'].'">'.$v['name'].'</option>';
                           }
                           ?>
                         </select>
                       
+                        </div>
+                        <div class="col-md-8"></div>
+                  <div class="col-12">
+                 
+                  <div id="trafficMonitor" class="trafficMonitor"></div> 
+    </div>
+
+                        <!-- Earnings (Monthly) Card Example -->
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                              Jumlah Gangguan Internet</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">0x</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-times fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Earnings (Monthly) Card Example -->
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-success shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                User Offline</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= $useronline?></div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-wifi fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Earnings (Monthly) Card Example -->
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-info shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                Jumlah Perangkat</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= $total?> </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pending Requests Card Example -->
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-warning shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                               Jumlah ruangan</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-university fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-<div class="row">
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/11.0.1/highcharts.js"></script>
+              
+                    <script>
+                      
+                    var interface = "<?= $this->session->userdata('interface')?>";
+                    function filter()
+                    {  
+                      var interface = $('#interface option:selected').data('interface');
+                      $.post('<?=base_url("mikrotik/index")?>',
+                      { 
+                        interface:interface
+                      },
+                      function(data){
+                        requestDatta('',interface) ;
+                        var interface = "<?= $this->session->userdata('interface')?>";
+                        Highcharts.chart('trafficMonitor', {
+                          title: {
+                              text: 'My custom title'
+                          },
+                        
+                      });
+                      
 
-    <div class="col-12">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/11.0.1/highcharts.js"></script>
-                  
-                  <script type="text/javascript"> 
+                      });
+                    
+                   
+                      
+                    }  
+                    // var interface = "INTERNET";
                     var chart;
                     var sessiondata = "";
-                    var interface = "INTERNET";
+
+
                     var n = 3000;
                     function requestDatta(session,iface) {
                       $.ajax({
                         url: '<?= base_url('mikrotik/json_traffic')?>',
                         datatype: "json",
+                        type: 'post',
+                        data : {
+                          interface : iface
+                        },
                         success: function(data) {
                           var midata = JSON.parse(data);
                           if( midata.length > 0 ) {
@@ -45,7 +155,7 @@
                         }       
                       });
                     }	
-
+                      
                     $(document).ready(function() {
                         Highcharts.setOptions({
                           global: {
@@ -125,78 +235,3 @@
                       });
                     });
                   </script>
-                  <div id="trafficMonitor"></div> 
-    </div>
-
-                        <!-- Earnings (Monthly) Card Example -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-primary shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                              Jumlah Gangguan Internet</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">0x</div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-times fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Earnings (Monthly) Card Example -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-success shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                                User Offline</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= $useronline?></div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-wifi fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Earnings (Monthly) Card Example -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-info shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                                Jumlah Perangkat</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= $total?> </div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Pending Requests Card Example -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-warning shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                               Jumlah ruangan</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-university fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
