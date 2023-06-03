@@ -11,4 +11,3 @@ $config['mikrotik_user'] ='admin'; <br>
 $config['mikrotik_pass'] = ''; <br>
 ###
 
-- Buka

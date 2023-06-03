@@ -4,7 +4,11 @@ class Setting extends CI_Controller {
 	 
 	function __construct(){
 		parent::__construct();		
-        $this->load->config('fcm'); 				
+        $this->load->config('fcm'); 			
+		$this->load->model('auth_model');
+		if(!$this->auth_model->current_user()){
+			redirect('auth/login'); 
+		}		
 	}
 public function index()
 	{ 

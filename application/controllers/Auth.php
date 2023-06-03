@@ -29,8 +29,7 @@ class Auth extends CI_Controller {
         $this->session->set_flashdata('error', 'Login Gagal, pastikan username dan passwrod benar!');
     }
 	
-    $this->load->view('template_sbadmin/login', $data);
-    // $this->load->view('template_sbadmin/footer', $data); 
+    $this->load->view('template_sbadmin/login', $data); 
 }
 
 public function logout()
