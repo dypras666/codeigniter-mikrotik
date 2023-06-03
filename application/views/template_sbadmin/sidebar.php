@@ -41,13 +41,7 @@
                 </a>
                 
             </li>
-            <li class="nav-item <?= $this->uri->segment(1) == "user" ? "active" : ""?>">
-                <a class="nav-link   "  href="<?= base_url('user')?>">
-                    <i class="fas fa-fw fa-users"></i>
-                    <span>User</span>
-                </a>
-                
-            </li>
+           
             <li class="nav-item <?= $this->uri->segment(1) == "log" ? "active" : ""?>">
                 <a class="nav-link   "  href="<?= base_url('log')?>">
                     <i class="fas fa-fw fa-file-pdf"></i>
@@ -55,10 +49,17 @@
                 </a>
                 
             </li>
-            <li class="nav-item <?= $this->uri->segment(1) == "dhcp_leasesn" ? "active" : ""?>">
+            <li class="nav-item <?= $this->uri->segment(1) == "dhcp_leases" ? "active" : ""?>">
                 <a class="nav-link   "  href="<?= base_url('dhcp_leases')?>">
                     <i class="fas fa-fw fa-wifi"></i>
                     <span>Log User Jaringan</span>
+                </a>
+                
+            </li>
+            <li class="nav-item <?= $this->uri->segment(1) == "user" ? "active" : ""?>">
+                <a class="nav-link   "  href="<?= base_url('user')?>">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>Setting Sistem</span>
                 </a>
                 
             </li>

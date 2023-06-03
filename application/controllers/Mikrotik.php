@@ -4,7 +4,11 @@ use Firebase\Firebase;
 class Mikrotik extends CI_Controller {	
 	private $connect;	
 	function __construct(){
-		parent::__construct();		
+		parent::__construct();	
+		$this->load->model('auth_model');
+		if(!$this->auth_model->current_user()){
+			redirect('auth/login'); 
+		}	
         $this->load->config('fcm'); 				
 		$this->connect = $this->routerapi->connect($this->config->item('mikrotik_ip'),$this->config->item('mikrotik_user'),$this->config->item('mikrotik_pass'));
    
@@ -19,6 +23,7 @@ class Mikrotik extends CI_Controller {
 			$this->session->set_userdata('interface','INTERNET');
 			$data = array(
 					'interface' =>  $this->routerapi->comm('/interface/print'),
+					'useronline' => $this->routerapi->comm('/ip/dhcp-server/lease/print'),
 					'total' => count($this->interface()),
 					'useronline' => count($this->routerapi->comm("/ip/hotspot/active/print")
 				));
@@ -188,7 +193,7 @@ class Mikrotik extends CI_Controller {
         $no=0;  
 		foreach($log as $v){            
             $data_log[] = array(
-                    'id' => $v['.id'],
+                    'id' => $no,
                     'time' => $v['time'], 
                     'topics' => $v['topics'], 
                     'message' => $v['message'], 
@@ -199,7 +204,7 @@ class Mikrotik extends CI_Controller {
 		array_multisort($data_log, SORT_DESC, $log);
         $data['recordsTotal'] = count($data_log);
         $data['recordsFiltered'] = count($data_log);
-
+		$this->routerapi->disconnect();	
 		$page = ! empty( $_GET['start'] ) ? (int) $_GET['start'] : 1;
 		$total = count($data_log);  
 		$limit = $_GET['length']; 
@@ -249,8 +254,11 @@ class Mikrotik extends CI_Controller {
 	 public function json_dhcp()
 	{ 
 		$network = $this->routerapi->comm('/ip/dhcp-server/lease/print');
-		echo json_encode($network);
+		$this->routerapi->disconnect();
+		echo json_encode($network);	
 	}
+
+ 
 
 	public function dt_dhcp()
 	{
@@ -260,7 +268,7 @@ class Mikrotik extends CI_Controller {
 		// var_dump($log);
 		foreach($log as $v){            
             $data_log[] = array(
-					'no' => $no,
+					'no' => $no+1,
                     'address' => $v['address'],
                     'mac-address' => $v['mac-address'], 
                     'server' => $v['server'], 
@@ -272,7 +280,7 @@ class Mikrotik extends CI_Controller {
             );
             $no++;
         }
-		array_multisort($data_log, SORT_DESC, $log);
+		array_multisort($data_log, SORT_ASC, $log);
         $data['recordsTotal'] = count($data_log);
         $data['recordsFiltered'] = count($data_log);
 

@@ -40,3 +40,7 @@ $config['mikrotik_ip'] = '192.168.88.1';
 $config['mikrotik_port'] = 8728;
 $config['mikrotik_user'] ='admin';
 $config['mikrotik_pass'] = 'masuk123';
+
+// LOGIN ADMIN
+$config['user'] = 'admin';
+$config['pass'] = 'admin';

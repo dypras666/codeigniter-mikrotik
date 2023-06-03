@@ -18,7 +18,7 @@
         rel="stylesheet"> -->
 
     <!-- Custom styles for this template-->
-    <link href="<?= base_url()?>assets/sbadmin/css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="<?= base_url()?>assets/sbadmin/css/sb-admin-2.min.css?v2" rel="stylesheet">
 
     <script src="<?= base_url()?>assets/sbadmin/vendor/jquery/jquery.min.js"></script>
 </head>

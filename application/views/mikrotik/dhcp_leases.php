@@ -1,7 +1,7 @@
 
 <link href="<?= base_url()?>assets/sbadmin/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
 <div class="container-fluid">
-          <h1 class="h3 mb-0 text-gray-800">Monitoring</h1>
+          <h1 class="h3 mb-0 text-gray-800">Monitoring Pengguna</h1>
           <p class="mb-4">LOG DHCP.</p>
      
 <div class="row">
