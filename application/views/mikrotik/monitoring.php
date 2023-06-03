@@ -44,12 +44,7 @@ var table = $('#datatables').DataTable( {
             { mData: 'rx' },
             { mData: 'tx' }
     ]
-    // "columnDefs": [
-    // { "targets": 0, "name": "id", 'searchable':false, 'orderable':true},
-    // { "targets": 1, "name": "interface", 'searchable':false, 'orderable':false},
-    // { "targets": 2, "name": "rx", 'searchable':false, 'orderable':false},
-    // { "targets": 3, "name": "tx", 'searchable':false, 'orderable':false},
-    // ]
+   
   });
 
   setInterval( function () {

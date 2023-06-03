@@ -52,12 +52,12 @@
             <li class="nav-item <?= $this->uri->segment(1) == "dhcp_leases" ? "active" : ""?>">
                 <a class="nav-link   "  href="<?= base_url('dhcp_leases')?>">
                     <i class="fas fa-fw fa-wifi"></i>
-                    <span>Log User Jaringan</span>
+                    <span>User Jaringan</span>
                 </a>
                 
             </li>
-            <li class="nav-item <?= $this->uri->segment(1) == "user" ? "active" : ""?>">
-                <a class="nav-link   "  href="<?= base_url('user')?>">
+            <li class="nav-item <?= $this->uri->segment(1) == "setting" ? "active" : ""?>">
+                <a class="nav-link   "  href="<?= base_url('setting')?>">
                     <i class="fas fa-fw fa-cog"></i>
                     <span>Setting Sistem</span>
                 </a>

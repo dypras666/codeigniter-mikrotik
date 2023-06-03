@@ -89,7 +89,7 @@ $autoload['drivers'] = array();
 |
 |	$autoload['helper'] = array('url', 'file');
 */
-$autoload['helper'] = array('url','function');
+$autoload['helper'] = array('url','function','form');
 
 /*
 | -------------------------------------------------------------------
@@ -103,7 +103,7 @@ $autoload['helper'] = array('url','function');
 | config files.  Otherwise, leave it blank.
 |
 */
-$autoload['config'] = array('mikrotik');
+$autoload['config'] = array();
 
 /*
 | -------------------------------------------------------------------

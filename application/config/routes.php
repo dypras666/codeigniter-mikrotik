@@ -51,6 +51,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 */
 $route['default_controller'] = 'mikrotik';
 $route['user'] = 'mikrotik/user';
+$route['setting'] = 'setting/index';
 $route['monitoring'] = 'mikrotik/monitoring';
 $route['bandwidth'] = 'mikrotik/bandwidth';
 $route['live_stat'] = 'mikrotik/live_stat';

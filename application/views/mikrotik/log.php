@@ -37,23 +37,14 @@ var table = $('#datatables').DataTable( {
     "processing": false,
     "serverSide": true,
     "ajax": "<?=base_url('mikrotik/dt_log')?>",
-    // "order": [['id','DESC']], 
     "aoColumns": [
             { mData: 'id' },
             { mData: 'time' },
             { mData: 'topics' },
             { mData: 'message' }
     ]
-    // "columnDefs": [
-    // { "targets": 0, "name": "id", 'searchable':false, 'orderable':true},
-    // { "targets": 1, "name": "interface", 'searchable':false, 'orderable':false},
-    // { "targets": 2, "name": "rx", 'searchable':false, 'orderable':false},
-    // { "targets": 3, "name": "tx", 'searchable':false, 'orderable':false},
-    // ]
+   
   });
 
-//   setInterval( function () {
-//     table.ajax.reload(null,false);
-// }, 1000 );
     </script>
 

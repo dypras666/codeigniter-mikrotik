@@ -2,20 +2,20 @@
 <link href="<?= base_url()?>assets/sbadmin/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
 <div class="container-fluid">
           <h1 class="h3 mb-0 text-gray-800">Monitoring Pengguna</h1>
-          <p class="mb-4">LOG DHCP.</p>
+          <p class="mb-4">LOG User Jaringan.</p>
      
 <div class="row">
 <div class="col-xl-12">
   <div class="card shadow mb-4">
   <div class="card-header py-3">
-      <h6 class="m-0 font-weight-bold text-primary">LOG DHCP</h6>
+      <h6 class="m-0 font-weight-bold text-primary">LOG User Jaringan</h6>
   </div>
   <div class="card-body">
       <table class="table table-striped table-sm" id="datatables" width="100%">
       <thead>
       <tr>
           <th scope="col" width="10">NO</th>
-          <th scope="col">Adreess</th>
+          <th scope="col">Address</th>
           <th scope="col">Mac Address</th>
           <th scope="col">Server</th> 
           <th scope="col">Last Seen</th> 
@@ -52,12 +52,7 @@ var table = $('#datatables').DataTable( {
             { mData: 'status' },
             { mData: 'dynamic' },
     ]
-    // "columnDefs": [
-    // { "targets": 0, "name": "id", 'searchable':false, 'orderable':true},
-    // { "targets": 1, "name": "interface", 'searchable':false, 'orderable':false},
-    // { "targets": 2, "name": "rx", 'searchable':false, 'orderable':false},
-    // { "targets": 3, "name": "tx", 'searchable':false, 'orderable':false},
-    // ]
+   
   });
 
   setInterval( function () {

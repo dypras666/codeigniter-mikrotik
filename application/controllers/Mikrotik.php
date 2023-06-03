@@ -9,7 +9,7 @@ class Mikrotik extends CI_Controller {
 		if(!$this->auth_model->current_user()){
 			redirect('auth/login'); 
 		}	
-        $this->load->config('fcm'); 				
+        $this->load->config('fcm',TRUE); 				
 		$this->connect = $this->routerapi->connect($this->config->item('mikrotik_ip'),$this->config->item('mikrotik_user'),$this->config->item('mikrotik_pass'));
    
 		  
@@ -20,13 +20,13 @@ class Mikrotik extends CI_Controller {
 		if($this->input->post('interface')){
 			$this->session->set_userdata('interface',$this->input->post('interface'));
 		}else{  
-			$this->session->set_userdata('interface','INTERNET');
+			$this->session->set_userdata('interface',$this->config->item('mikrotik_default_interface'));
+			
 			$data = array(
-					'interface' =>  $this->routerapi->comm('/interface/print'),
-					'useronline' => $this->routerapi->comm('/ip/dhcp-server/lease/print'),
-					'total' => count($this->interface()),
-					'useronline' => count($this->routerapi->comm("/ip/hotspot/active/print")
-				));
+					'interface' =>  $this->routerapi->comm('/interface/print'), 
+					'gangguan_internet' => 0,
+					'total' => count($this->interface())
+				);
 			$this->load->view('template_sbadmin/header', $data);
 			$this->load->view('template_sbadmin/sidebar', $data);
 			$this->load->view('template_sbadmin/menu', $data);
@@ -77,6 +77,8 @@ class Mikrotik extends CI_Controller {
 		$this->load->view('mikrotik/bandwidth', $data);
 		$this->load->view('template_sbadmin/footer', $data);
 	}
+
+	
 			
 	public function user()
 	{		
@@ -253,9 +255,23 @@ class Mikrotik extends CI_Controller {
 	}
 	 public function json_dhcp()
 	{ 
+		$this->connect;	
 		$network = $this->routerapi->comm('/ip/dhcp-server/lease/print');
 		$this->routerapi->disconnect();
 		echo json_encode($network);	
+	}
+
+	public function json_device_offline()
+	{
+		$this->connect;	
+		$device_on = array();
+		foreach($this->routerapi->comm('/ip/dhcp-server/lease/print')  as $v){
+			if(empty($v['host-name'])){
+				$device_on[] = array($v['mac-address']);
+			}
+		} 
+		// $this->routerapi->disconnect();
+		echo json_encode(count($device_on));
 	}
 
  
