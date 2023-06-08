@@ -159,9 +159,17 @@ class Mikrotik extends CI_Controller {
                 'interface' => $v['name'],
                 'once' =>''
             ));
+			if($network[0]['rx-bits-per-second'] <= 0 &&  $network[0]['tx-bits-per-second'] <= 0){
+				$name = '<span class="text-danger">'.$v['name'].'</span>';
+			}elseif($network[0]['rx-bits-per-second'] <= 0 || $network[0]['tx-bits-per-second'] <= 0){
+				$name = '<span class="text-warning">'.$v['name'].'</span>';
+			}else{
+				$name = '<span class="text-success">'.$v['name'].'</span>';
+			}
+			$warna = 
             $data_internet[] = array(
                     'no' => $no+1,
-                    'name' => $v['name'],
+                    'name' => $name,
                     'rx' => formatBytes($network[0]['rx-bits-per-second']),
                     'tx' => formatBytes($network[0]['tx-bits-per-second']) ,
 					 
@@ -182,7 +190,6 @@ class Mikrotik extends CI_Controller {
 		$data_internet = array_slice( $data_internet, $offset, $limit );
 		if($_GET['search']['value']){
 			$data_internet= $this->searchData($_GET['search']['value'] ,$data_internet);
-			 
 		} 
         $data['data'] =  $data_internet;
         echo json_encode($data);
@@ -320,8 +327,7 @@ class Mikrotik extends CI_Controller {
 	 
 	function searchData($id, $array) {
 	 
-		foreach ($array as $key => $val) {
-			//  var_dump($id);
+		foreach ($array as $key => $val) { 
 			if ($val['name'] === $id) { 
 				 return array(
 					array(
