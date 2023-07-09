@@ -9,7 +9,11 @@
       <h6 class="m-0 font-weight-bold text-primary">Manajemen Akun Hotspot</h6>
   </div>
   <div class="card-body table-responsive"> 
-	
+  <?php
+	$flashmessage = $this->session->flashdata('message');
+	echo !empty($flashmessage) ? '<div class="alert alert-success alert-dismissible" role="alert">' . $flashmessage . '</div><hr>': '';
+?>	
+
   <a class="btn btn-primary" href="<?= base_url('mikrotik/hotspot_user_add')?>">Tambah  </a>
   <hr>
 <table class="table table-striped table-sm" id="datatables">
