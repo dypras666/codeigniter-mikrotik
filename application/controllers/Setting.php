@@ -10,11 +10,11 @@ class Setting extends CI_Controller {
 			redirect('auth/login'); 
 		}		
 	}
-public function index()
+	public function index()
 	{ 
-		if($this->input->post()){
-			$file = FCPATH.'/application/config/fcm.php';
-		$content = file_get_contents($file);
+if($this->input->post()){
+$file = FCPATH.'/application/config/fcm.php';
+$content = file_get_contents($file);
 $newcontent = "<?php
 defined('BASEPATH') or exit('No direct script access allowed'); \n\n";
 
@@ -100,8 +100,6 @@ if($this->input->post('pass')){
 		$this->load->view('template_sbadmin/menu', $data);
 		$this->load->view('mikrotik/setting', $data);
 		$this->load->view('template_sbadmin/footer', $data);
-		
-
 		
 		}
 	}

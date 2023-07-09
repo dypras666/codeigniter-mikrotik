@@ -38,21 +38,30 @@
                 <a class="nav-link   "  href="<?= base_url('monitoring')?>">
                     <i class="fas fa-fw fa-chart-area"></i>
                     <span>Perangkat</span>
+                </a>                
+            </li>    
+            <li class="nav-item <?= $this->uri->segment(1) == "hotspot_user" ? "active" : ""?>">
+                <a class="nav-link   "  href="<?= base_url('hotspot_user')?>">
+                    <i class="fas fa-fw fa-users"></i>
+                    <span>Akun Hotspot</span>
                 </a>
-                
             </li>
-           
-            <li class="nav-item <?= $this->uri->segment(1) == "log" ? "active" : ""?>">
-                <a class="nav-link   "  href="<?= base_url('log')?>">
-                    <i class="fas fa-fw fa-file-pdf"></i>
-                    <span>Log Aktivitas</span>
+            <li class="nav-item <?= $this->uri->segment(1) == "hotspot_profile" ? "active" : ""?>">
+                <a class="nav-link   "  href="<?= base_url('hotspot_profile')?>">
+                    <i class="fas fa-fw fa-user-md"></i>
+                    <span>Hotspot Profil</span>
                 </a>
-                
             </li>
             <li class="nav-item <?= $this->uri->segment(1) == "dhcp_leases" ? "active" : ""?>">
                 <a class="nav-link   "  href="<?= base_url('dhcp_leases')?>">
                     <i class="fas fa-fw fa-wifi"></i>
-                    <span>User Jaringan</span>
+                    <span>Aktif User</span>
+                </a>
+            </li>
+            <li class="nav-item <?= $this->uri->segment(1) == "log" ? "active" : ""?>">
+                <a class="nav-link   "  href="<?= base_url('log')?>">
+                    <i class="fas fa-fw fa-file-pdf"></i>
+                    <span>Log Aktivitas</span>
                 </a>
                 
             </li>

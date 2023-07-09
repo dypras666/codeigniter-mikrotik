@@ -72,15 +72,24 @@ class Mikrotik extends CI_Controller {
         $connect = $this->connect;	 
         $data = array();
 		$this->load->view('template_sbadmin/header', $data);
-		$this->load->view('template_sbadmin/menu', $data);
 		$this->load->view('template_sbadmin/sidebar', $data);
+		$this->load->view('template_sbadmin/menu', $data);
 		$this->load->view('mikrotik/bandwidth', $data);
 		$this->load->view('template_sbadmin/footer', $data);
-	}
-
+	} 
 	
-			
-	public function user()
+	public function hotspot_profile()
+	{		
+        $connect = $this->connect;	 
+        $data = array();
+		$this->load->view('template_sbadmin/header', $data);
+		$this->load->view('template_sbadmin/sidebar', $data);
+		$this->load->view('template_sbadmin/menu', $data);
+		$this->load->view('mikrotik/profile', $data);
+		$this->load->view('template_sbadmin/footer', $data);
+	}
+				
+	public function hotspot_user()
 	{		
         $connect = $this->connect;		
         $data['hotspot_users'] = array();	
@@ -94,6 +103,28 @@ class Mikrotik extends CI_Controller {
 		$this->load->view('template_sbadmin/sidebar', $data);
 		$this->load->view('template_sbadmin/menu', $data);
 		$this->load->view('mikrotik/user', $data);
+		$this->load->view('template_sbadmin/footer', $data);
+	}
+	public function hotspot_user_add()
+	{		
+        $connect = $this->connect;		
+        $data['hotspot_users'] = array();	
+		 
+		$this->load->view('template_sbadmin/header', $data);
+		$this->load->view('template_sbadmin/sidebar', $data);
+		$this->load->view('template_sbadmin/menu', $data);
+		$this->load->view('mikrotik/user_add', $data);
+		$this->load->view('template_sbadmin/footer', $data);
+	}
+	public function hotspot_user_edit()
+	{		
+        $connect = $this->connect;		
+        $data['hotspot_users'] = array();	
+		 
+		$this->load->view('template_sbadmin/header', $data);
+		$this->load->view('template_sbadmin/sidebar', $data);
+		$this->load->view('template_sbadmin/menu', $data);
+		$this->load->view('mikrotik/user_edit', $data);
 		$this->load->view('template_sbadmin/footer', $data);
 	}
 
