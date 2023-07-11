@@ -58,7 +58,7 @@ $autoload['packages'] = array();
 |
 |	$autoload['libraries'] = array('user_agent' => 'ua');
 */
-$autoload['libraries'] = array('RouterApi','session','fcm');
+$autoload['libraries'] = array('RouterApi','session','fcm','form_validation');
 
 /*
 | -------------------------------------------------------------------

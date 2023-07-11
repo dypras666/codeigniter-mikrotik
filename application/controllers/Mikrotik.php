@@ -85,7 +85,7 @@ class Mikrotik extends CI_Controller {
 		$this->load->view('template_sbadmin/header', $data);
 		$this->load->view('template_sbadmin/sidebar', $data);
 		$this->load->view('template_sbadmin/menu', $data);
-		$this->load->view('mikrotik/profile', $data);
+		$this->load->view('mikrotik/hotspot_server', $data);
 		$this->load->view('template_sbadmin/footer', $data);
 	}
 				
@@ -251,6 +251,64 @@ class Mikrotik extends CI_Controller {
 	}
 
 	
+	public function dt_profile()
+	{
+		header('Content-Type: application/json');
+		$connect = $this->connect;	   
+		$log = $this->routerapi->comm("/ip/hotspot/profile/getall");  
+		 
+        $no=1;  
+		foreach($log as $v){        
+			$btn_update = @$v['default'] == 'false' ? '<a class="btn btn-sm btn-sucess" href="'.base_url('mikrotik/hotspot_server_enable/'.$v['.id']).'">Enable</a>' :  '<a class="btn btn-sm btn-warning" href="'.base_url('mikrotik/hotspot_server_disable/'.$v['.id']).'">Disable</a>';
+			
+			$btn = "<div class='btn-group'>
+			<a class='btn btn-sm btn-primary' href='".base_url('mikrotik/hotspot_server_update/'.$v['.id'])."'>Update</a>
+			$btn_update
+			<a class='btn btn-sm btn-danger' href='".base_url('mikrotik/hotspot_server_delete/'.$v['.id'])."'>Delete</a>
+			</div>";    
+            $data_log[] = array(
+                    'id' => $no,
+                    'name' => @$v['name'], 
+                    // 'hotspot-address' => @$v['hotspot-address'], 
+                    'dns-name' => @$v['dns-name'], 
+                    'html-directory' => @$v['html-directory'], 
+                    // 'html-directory-override' => @$v['html-directory-override'], 
+                    'rate-limit' => @$v['rate-limit'], 
+                    // 'http-proxy' => @$v['http-proxy'], 
+                    // 'smtp-server' => @$v['smtp-server'], 
+                    // 'login-by' => @$v['login-by'], 
+                    // 'http-cookie-lifetime' => @$v['http-cookie-lifetime'], 
+                    // 'split-user-domain' => @$v['split-user-domain'], 
+                    // 'use-radius' => @$v['use-radius'], 
+                    // 'default' => @$v['default'], 
+					'button' => $btn
+					 
+            );
+            $no++;
+        }
+		array_multisort($data_log, SORT_DESC, $log);
+        $data['recordsTotal'] = count($data_log);
+        $data['recordsFiltered'] = count($data_log);
+		$this->routerapi->disconnect();	
+		$page = ! empty( $_GET['start'] ) ? (int) $_GET['start'] : 1;
+		$total = count($data_log);  
+		$limit = $_GET['length']; 
+		$totalPages = ceil( $total/ $limit );  
+		$page = max($page, 1);  
+		$page = min($page, $totalPages);  
+		$offset = ($page - 1) * $limit;
+		if( $offset < 0 ) $offset = 0;
+		$data_log = array_slice( $data_log, $offset, $limit );
+		if($_GET['search']['value']){
+			$data_log= $this->searchData($_GET['search']['value'] ,$data_log);
+			 
+		} 
+        $data['data'] =  $data_log;
+        echo json_encode($data);
+		 
+	}
+
+	
 	
 	public function json_traffic()
 	{ 
@@ -358,7 +416,7 @@ class Mikrotik extends CI_Controller {
 			}
 		}
 		return null;
-	 }
+	 } 
 
   
 
