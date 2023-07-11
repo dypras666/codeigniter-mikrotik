@@ -593,7 +593,8 @@ class Mikrotik extends CI_Controller {
 	}
 	
 	public function user_enable($id){
-		if ($this->routerapi->connect($this->session->userdata('hostname_mikrotik'), $this->session->userdata('username_mikrotik'), $this->session->userdata('password_mikrotik'))){
+		$connect = $this->connect;	
+		if ($connect){
 			$this->routerapi->write('/ip/hotspot/user/enable',false);
 			$this->routerapi->write('=.id='.$id);
 			$hotspot_users = $this->routerapi->read();

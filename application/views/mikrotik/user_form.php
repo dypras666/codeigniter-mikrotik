@@ -1,7 +1,15 @@
-<div class="page-header">
-<h1>Hotspot<br><small>Users</small></h1>
-<hr>
-<p>
+
+<div class="container-fluid">
+          <h1 class="h3 mb-0 text-gray-800">Update User Hotspot</h1>
+          <p class="mb-4"> penyesuaian user mikrotik   .</p>
+          
+<div class="row">
+<div class="col-xl-12">
+  <div class="card shadow mb-4">
+  <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">Manajemen Akun Hotspot</h6>
+  </div>
+  <div class="card-body table-responsive"> 
 <form class="form-horizontal" name="frmtambah" method="post" action="<?php echo $form_action; ?>">
 	<div class="form-group">
 		<label class="col-md-2 control-label"  for="server">Server</label>
@@ -70,4 +78,7 @@
 	</div>
 </form>
 </p>
+</div>  
+</div>
+  </div>
 </div>

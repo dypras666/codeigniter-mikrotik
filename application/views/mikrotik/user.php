@@ -31,6 +31,13 @@
 </thead>
 <tbody>
 <?php $i =1; foreach ($hotspot_users as $user){  
+					$btn_update = @$user['disabled'] == 'true' ? '<a class="btn btn-sm btn-success" href="'.base_url('mikrotik/user_enable/'.$user['.id']).'">Enable</a>' :  '<a class="btn btn-sm btn-warning" href="'.base_url('mikrotik/user_disable/'.$user['.id']).'">Disable</a>';
+			
+					$btn = "<div class='btn-group'>
+					<a class='btn btn-sm btn-primary' href='".base_url('mikrotik/hotspot_user_edit/'.$user['.id'])."'>Update</a>
+					$btn_update
+					<a class='btn btn-sm btn-danger' href='".base_url('mikrotik/hotspot_user_delete')."'>Delete</a>
+					</div>";
 					echo '<tr>';
 					echo '<td class="col-md-1 text-center">'.$i.'.</td>';
 					if (isset($user['server'])){
@@ -52,7 +59,7 @@
 						echo '<td>&nbsp;</td>';
 					}
 				 
-					echo '</td><td></td>';
+					echo '</td><td>'.$btn .'</td>';
 					echo '</tr>';
 					$i++;
 }?>
