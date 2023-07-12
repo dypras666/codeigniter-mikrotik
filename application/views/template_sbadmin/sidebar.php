@@ -43,13 +43,13 @@
             <li class="nav-item <?= $this->uri->segment(1) == "hotspot_user" ? "active" : ""?>">
                 <a class="nav-link   "  href="<?= base_url('hotspot_user')?>">
                     <i class="fas fa-fw fa-users"></i>
-                    <span>Akun Hotspot</span>
+                    <span>User Hotspot</span>
                 </a>
             </li>
             <li class="nav-item <?= $this->uri->segment(1) == "hotspot_profile" ? "active" : ""?>">
                 <a class="nav-link   "  href="<?= base_url('hotspot_profile')?>">
                     <i class="fas fa-fw fa-user-md"></i>
-                    <span>Hotspot Profil</span>
+                    <span>User Profil</span>
                 </a>
             </li>
             <li class="nav-item <?= $this->uri->segment(1) == "dhcp_leases" ? "active" : ""?>">

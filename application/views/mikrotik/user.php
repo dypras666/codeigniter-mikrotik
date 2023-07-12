@@ -36,7 +36,7 @@
 					$btn = "<div class='btn-group'>
 					<a class='btn btn-sm btn-primary' href='".base_url('mikrotik/hotspot_user_edit/'.$user['.id'])."'>Update</a>
 					$btn_update
-					<a class='btn btn-sm btn-danger' href='".base_url('mikrotik/hotspot_user_delete')."'>Delete</a>
+					<a class='btn btn-sm btn-danger' href='".base_url('mikrotik/user_remove/'.$user['.id'])."'>Delete</a>
 					</div>";
 					echo '<tr>';
 					echo '<td class="col-md-1 text-center">'.$i.'.</td>';

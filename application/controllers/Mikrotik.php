@@ -85,7 +85,7 @@ class Mikrotik extends CI_Controller {
 		$this->load->view('template_sbadmin/header', $data);
 		$this->load->view('template_sbadmin/sidebar', $data);
 		$this->load->view('template_sbadmin/menu', $data);
-		$this->load->view('mikrotik/hotspot_server', $data);
+		$this->load->view('mikrotik/hotspot_profile', $data);
 		$this->load->view('template_sbadmin/footer', $data);
 	}
 				
@@ -248,14 +248,68 @@ class Mikrotik extends CI_Controller {
         $data['data'] =  $data_log;
         echo json_encode($data);
 		 
-	}
+	} 
 
 	
 	public function dt_profile()
 	{
 		header('Content-Type: application/json');
 		$connect = $this->connect;	   
-		$log = $this->routerapi->comm("/ip/hotspot/profile/getall");  
+		$log = $this->routerapi->comm("/ip/hotspot/user/profile/print");  
+		 
+        $no=1;  
+		foreach($log as $v){        
+			$btn_update = @$v['default'] == 'false' ? '<a class="btn btn-sm btn-sucess" href="'.base_url('mikrotik/hotspot_profile_enable/'.$v['.id']).'">Enable</a>' :  '<a class="btn btn-sm btn-warning" href="'.base_url('mikrotik/hotspot_profile_disable/'.$v['.id']).'">Disable</a>';
+			
+			$btn = "<div class='btn-group'>
+			<a class='btn btn-sm btn-primary' href='".base_url('mikrotik/hotspot_profile_update/'.$v['.id'])."'>Update</a>
+			$btn_update
+			<a class='btn btn-sm btn-danger' href='".base_url('mikrotik/hotspot_profile_delete/'.$v['.id'])."'>Delete</a>
+			</div>";    
+            $data_log[] = array(
+                    'id' => $no,
+                    'name' => @$v['name'],  
+                    'idle-timeout' => @$v['idle-timeout'], 
+                    'keepalive-timeout' => @$v['keepalive-timeout'],  
+                    'shared-users' => @$v['shared-users'], 
+                    'rate-limit' => @$v['rate-limit'], 
+                    // 'smtp-server' => @$v['smtp-server'], 
+                    // 'login-by' => @$v['login-by'], 
+                    // 'http-cookie-lifetime' => @$v['http-cookie-lifetime'], 
+                    // 'split-user-domain' => @$v['split-user-domain'], 
+                    // 'use-radius' => @$v['use-radius'], 
+                    // 'default' => @$v['default'], 
+					'button' => $btn
+					 
+            );
+            $no++;
+        }
+		array_multisort($data_log, SORT_DESC, $log);
+        $data['recordsTotal'] = count($data_log);
+        $data['recordsFiltered'] = count($data_log);
+		$this->routerapi->disconnect();	
+		$page = ! empty( $_GET['start'] ) ? (int) $_GET['start'] : 1;
+		$total = count($data_log);  
+		$limit = $_GET['length']; 
+		$totalPages = ceil( $total/ $limit );  
+		$page = max($page, 1);  
+		$page = min($page, $totalPages);  
+		$offset = ($page - 1) * $limit;
+		if( $offset < 0 ) $offset = 0;
+		$data_log = array_slice( $data_log, $offset, $limit );
+		if($_GET['search']['value']){
+			$data_log= $this->searchData($_GET['search']['value'] ,$data_log);
+			 
+		} 
+        $data['data'] =  $data_log;
+        echo json_encode($data);
+		 
+	}
+	public function dt_server()
+	{
+		header('Content-Type: application/json');
+		$connect = $this->connect;	   
+		$log = $this->routerapi->comm("/ip/hotspot/user/profile/getall");  
 		 
         $no=1;  
 		foreach($log as $v){        
@@ -450,7 +504,7 @@ class Mikrotik extends CI_Controller {
 
 	
 	public function hotspot_user_add(){ 
-		$data['form_action'] = site_url('mikrotik/add');	 
+		$data['form_action'] = site_url('mikrotik/hotspot_user_add');	 
 		$this->form_validation->set_rules('name', 'Name', 'required');
 		$this->form_validation->set_rules('profile', 'Profile', 'required');		
 		$this->form_validation->set_rules('disabled', 'Disabled', 'required');	
@@ -465,7 +519,8 @@ class Mikrotik extends CI_Controller {
 			$comment = $this->input->post('comment');
 			$disabled = $this->input->post('disabled');
 			
-			if ($this->routerapi->connect($this->session->userdata('hostname_mikrotik'), $this->session->userdata('username_mikrotik'), $this->session->userdata('password_mikrotik'))){
+			$connect = $this->connect;
+			if ($connect){
 				$this->routerapi->write('/ip/hotspot/user/add',false);				
 				$this->routerapi->write('=server='.$server, false);							
 				$this->routerapi->write('=name='.$name, false);
@@ -483,7 +538,7 @@ class Mikrotik extends CI_Controller {
 				$hotspot_users = $this->routerapi->read();
 				$this->routerapi->disconnect();	
 				$this->session->set_flashdata('message','Data user hotspot tersebut berhasil ditambahkan!');
-				redirect('hotspot');
+				redirect('hotspot_user');
 			}
 		}else{
 			$data['default']['server'] = $this->input->post('server');
@@ -527,7 +582,7 @@ class Mikrotik extends CI_Controller {
 				}
 				
 				$name = $row['name'];			
-				$password = $row['password'];
+				$password = @$row['password'];
 				
 				if (isset($row['mac-address'])){
 					$mac_address = $row['mac-address'];			
@@ -535,7 +590,7 @@ class Mikrotik extends CI_Controller {
 					$mac_address = '';
 				}
 				
-				$profile = $row['profile'];
+				$profile = @$row['profile'];
 				
 				if (isset($row['server'])){
 					$comment = $row['comment'];
@@ -551,10 +606,8 @@ class Mikrotik extends CI_Controller {
 					$disabled='no';
 				}
 			}
-			$this->routerapi->disconnect();
-			
-			$this->session->set_userdata('id',$id);
-			
+			$this->routerapi->disconnect();			
+			$this->session->set_userdata('id',$id);			
 			$data['default']['server'] = $server;
 			$data['default']['name'] = $name;			
 			$data['default']['password'] = $password;
@@ -608,7 +661,7 @@ class Mikrotik extends CI_Controller {
 				$this->routerapi->disconnect();	
 				$this->session->unset_userdata('id');
 				$this->session->set_flashdata('message','Data user hotspot tersebut berhasil diubah!');
-				redirect('hotspot');				
+				redirect('hotspot_user');				
 			}	
 		}else{
 			$data['default']['server'] = $this->input->post('server');
@@ -659,6 +712,42 @@ class Mikrotik extends CI_Controller {
 			$this->routerapi->disconnect();	
 			$this->session->set_flashdata('message','Data user tersebut berhasil diaktifkan!');
 			redirect('hotspot_user');
+		}
+	}
+	
+	public function hotspot_profile_remove($id){
+		$connect = $this->connect;
+		if ($connect){
+			$this->routerapi->write('/ip/hotspot/user/profile/remove',false);
+			$this->routerapi->write('=.id='.$id);
+			$hotspot_users = $this->routerapi->read();
+			$this->routerapi->disconnect();	
+			$this->session->set_flashdata('message','Data profil tersebut berhasil dihapus!');
+			redirect('hotspot_profile');
+		}	
+	}
+	
+	public function hotspot_profile_disable($id){	
+		$connect = $this->connect;	
+		if ($connect){
+			$this->routerapi->write('/ip/hotspot/user/profile/disable',false);
+			$this->routerapi->write('=.id='.$id);
+			$hotspot_users = $this->routerapi->read();
+			$this->routerapi->disconnect();	
+			$this->session->set_flashdata('message','Data profil tersebut berhasil dinonaktifkan!');
+			redirect('hotspot_profile');
+		}
+	}
+	
+	public function hotspot_profile_enable($id){
+		$connect = $this->connect;	
+		if ($connect){
+			$this->routerapi->write('/ip/hotspot/user/profile/enable',false);
+			$this->routerapi->write('=.id='.$id);
+			$hotspot_users = $this->routerapi->read();
+			$this->routerapi->disconnect();	
+			$this->session->set_flashdata('message','Data profil tersebut berhasil diaktifkan!');
+			redirect('hotspot_profile');
 		}
 	}
 }
