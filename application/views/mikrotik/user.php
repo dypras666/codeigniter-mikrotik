@@ -36,13 +36,17 @@
 					$btn = "<div class='btn-group'>
 					<a class='btn btn-sm btn-primary' href='".base_url('mikrotik/hotspot_user_edit/'.$user['.id'])."'>Update</a>
 					$btn_update
-					<a class='btn btn-sm btn-danger' href='".base_url('mikrotik/user_remove/'.$user['.id'])."'>Delete</a>
+					<a class='btn btn-sm btn-danger' href='".base_url('mikrotik/hotspot_user_delete/'.$user['.id'])."'>Delete</a>
 					</div>";
 					echo '<tr>';
 					echo '<td class="col-md-1 text-center">'.$i.'.</td>';
 					if (isset($user['server'])){
 						echo '<td>'.$user['server'].'</td>';
-				echo '<td class="col-md-1 text-center">'.@$user['password'].'</td>';
+					}else{
+						echo '<td>&nbsp;</td>';
+					}
+					echo '<td class="col-md-1 text-center">'.$user['name'].'</td>';
+					echo '<td class="col-md-1 text-center">'.@$user['password'].'</td>';
 					if (isset($user['mac-address'])){
 						echo '<td>'.$user['mac-address'].'</td>';
 					}else{
