@@ -42,11 +42,7 @@
 					echo '<td class="col-md-1 text-center">'.$i.'.</td>';
 					if (isset($user['server'])){
 						echo '<td>'.$user['server'].'</td>';
-					}else{
-						echo '<td>&nbsp;</td>';
-					}
-					echo '<td class="col-md-1 text-center">'.$user['name'].'</td>';
-					echo '<td class="col-md-1 text-center">'.@$user['password'].'</td>';
+				echo '<td class="col-md-1 text-center">'.@$user['password'].'</td>';
 					if (isset($user['mac-address'])){
 						echo '<td>'.$user['mac-address'].'</td>';
 					}else{
