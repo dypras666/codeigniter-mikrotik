@@ -9,7 +9,7 @@ class Auth extends CI_Controller {
 
     public function login(){
     if($this->auth_model->current_user()){
-        redirect('/'); 
+        redirect('setting'); 
     }	
     $data = array();
     $this->load->view('template_sbadmin/header', $data); 
@@ -24,7 +24,7 @@ class Auth extends CI_Controller {
     $password = $this->input->post('password');
 
     if($this->auth_model->login($username, $password)){
-        redirect('/');
+        redirect('setting');
     } else {
         $this->session->set_flashdata('error', 'Login Gagal, pastikan username dan passwrod benar!');
     }
