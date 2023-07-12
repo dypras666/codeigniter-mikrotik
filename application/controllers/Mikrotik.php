@@ -88,6 +88,135 @@ class Mikrotik extends CI_Controller {
 		$this->load->view('mikrotik/hotspot_profile', $data);
 		$this->load->view('template_sbadmin/footer', $data);
 	}
+	public function hotspot_profile_update($id="")
+	{		
+         
+        $data = array();
+		$data['form_action'] = 'hotspot_profile_process';
+		$connect = $this->connect;
+		if ($connect){
+			$this->routerapi->write("/ip/hotspot/user/profile/print", false);			
+			$this->routerapi->write("=.proplist=.id", false); 
+			$this->routerapi->write("=.proplist=name", false);
+			$this->routerapi->write("=.proplist=idle-timeout", false);		
+			$this->routerapi->write("=.proplist=keepalive-timeout", false);
+			$this->routerapi->write("=.proplist=shared-users", false);
+			$this->routerapi->write("=.proplist=rate-limit", false);		
+			$this->routerapi->write("=.proplist=disabled", false);		
+			$this->routerapi->write("?.id=$id");
+					
+			$hotspot_user = $this->routerapi->read(); 
+			foreach ($hotspot_user as $row)
+			{
+				if (isset($row['server'])){
+					$server = $row['server'];
+				}else{
+					$server = '';
+				}
+				
+				$name = $row['name'];			 
+				
+				if (isset($row['idle-timeout'])){
+					$idle_timeout = $row['idle-timeout'];			
+				}else{
+					$idle_timeout = '';
+				}
+				 
+				
+				if (isset($row['keepalive-timeout'])){
+					$keepalive_timeout = $row['keepalive-timeout'];			
+				}else{
+					$keepalive_timeout = '';
+				}
+				 
+				
+				if (isset($row['shared-users'])){
+					$shared_users = $row['shared-users'];			
+				}else{
+					$shared_users = '';
+				}
+				 
+				
+				if (isset($row['rate-limit'])){
+					$rate_limit = $row['rate-limit'];
+				}else{
+					$rate_limit = '';
+				}
+				 
+			}
+			$this->routerapi->disconnect();			
+			$this->session->set_userdata('id',$id);			
+			$data['default']['server'] = $server;
+			$data['default']['idle-timeout'] = $idle_timeout;			
+			$data['default']['keepalive-timeout'] = $keepalive_timeout;
+			$data['default']['rate-limit'] = $rate_limit;
+			$data['default']['shared-users'] = $shared_users; 
+		}
+		$this->load->view('template_sbadmin/header', $data);
+		$this->load->view('template_sbadmin/sidebar', $data);
+		$this->load->view('template_sbadmin/menu', $data);
+		$this->load->view('mikrotik/profile_form', $data);
+		$this->load->view('template_sbadmin/footer', $data);
+	}
+
+	public function hotspot_profile_process(){ 
+		$data['form_action'] = site_url('mikrotik/hotspot_profile_process');	
+		$connect = $this->connect;
+		$this->form_validation->set_rules('name', 'Name', 'required');
+		$this->form_validation->set_rules('profile', 'Profile', 'required');		
+		$this->form_validation->set_rules('disabled', 'Disabled', 'required');	
+		
+		if ($this->form_validation->run() == TRUE)
+		{
+			$server = $this->input->post('server');			
+			$name = $this->input->post('name');			
+			$password = $this->input->post('password');
+			if (empty($password)){
+				$password = '';
+			}			
+			$mac_address = $this->input->post('mac_address');
+			if (empty($mac_address)){
+				$mac_address = '00:00:00:00:00:00';
+			}
+			$profile = $this->input->post('profile');
+			$comment = $this->input->post('comment');
+			$disabled = $this->input->post('disabled');
+			
+			if ($connect){
+				$this->routerapi->write('/ip/hotspot/user/set',false);				
+				$this->routerapi->write('=.id='.$this->session->userdata('id'),false);
+				$this->routerapi->write('=server='.$server,false);										
+				$this->routerapi->write('=name='.$name, false);				
+				$this->routerapi->write('=password='.$password, false);    				
+				$this->routerapi->write('=mac-address='.$mac_address, false);								
+				$this->routerapi->write('=profile='.$profile, false);				
+				$this->routerapi->write('=comment='.$comment, false);						
+				$this->routerapi->write('=disabled='.$disabled);				
+								
+				$hotspot_users = $this->routerapi->read();
+				$this->routerapi->disconnect();	
+				$this->session->unset_userdata('id');
+				$this->session->set_flashdata('message','Data user hotspot tersebut berhasil diubah!');
+				redirect('hotspot_user');				
+			}	
+		}else{
+			$data['default']['server'] = $this->input->post('server');
+			$data['default']['name'] = $this->input->post('name');
+			$data['default']['password'] = $this->input->post('password');
+			$data['default']['mac_address'] = $this->input->post('mac_address');
+			$data['default']['profile'] = $this->input->post('profile');
+			$data['default']['comment'] = $this->input->post('comment');
+			$data['default']['disabled'] = $this->input->post('disabled');
+		}
+		$this->load->view('template_sbadmin/header', $data);
+		$this->load->view('template_sbadmin/sidebar', $data);
+		$this->load->view('template_sbadmin/menu', $data);
+		$this->load->view('mikrotik/user_form', $data);
+		$this->load->view('template_sbadmin/footer', $data);				
+	}	
+	
+
+	
 				
 	public function hotspot_user()
 	{		
