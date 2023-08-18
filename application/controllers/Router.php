@@ -918,14 +918,12 @@ class Router extends CI_Controller
 		echo json_encode($response);
 	}
 
-	function netwatch_remove()
+	function netwatch_delete()
 	{
 		header('Content-Type: application/json');
 		$id = $this->input->post('id');
-		$status = $this->input->post('status');
 		$query = (new Query('/tool/netwatch/remove'));
-		$query->equal('.id', $id)
-			->equal('disabled', $status);
+		$query->equal('.id', $id);
 		$response = $this->connect()->query($query)->read();
 		echo json_encode($response);
 	}
@@ -935,36 +933,39 @@ class Router extends CI_Controller
 		$query = (new Query('/tool/netwatch/print'));
 		$log = $this->connect()->query($query)->read();
 		$no = 0;
-		foreach ($log as $v) {
+		$data_log  = array();
+		if (count($log) > 0) {
+			foreach ($log as $v) {
 
-			$btn = $v['disabled'] == "true" ? ["btn-success change-status", 'Enable', 'false'] : ["btn-warning change-status", 'Disable', 'true'];
-			$data_log[] = array(
-				'no' => $no + 1,
-				'host' => '<a class="edit" style="cursor:pointer" data-id="' . $v['.id'] . '"><i class="fa fa-edit"></i> ' . $v['host'] . '</a>',
-				'interval' => $v['interval'],
-				'timeout' => $v['timeout'],
-				'status' => $v['status'],
-				'since' => @$v['since'],
-				'opsi' => '<div class="btn-group"><a class="btn btn-sm ' . $btn[0] . '" data-id="' . $v['.id'] . '" data-status="' . $btn[2] . '"> ' . $btn[1] . '</a><a class="btn btn-sm btn-danger delete"> Hapus</a></div>'
+				$btn = $v['disabled'] == "true" ? ["btn-success change-status", 'Enable', 'false'] : ["btn-warning change-status", 'Disable', 'true'];
+				$data_log[] = array(
+					'no' => $no + 1,
+					'host' => '<a class="edit" style="cursor:pointer" data-id="' . $v['.id'] . '"><i class="fa fa-edit"></i> ' . $v['host'] . '</a>',
+					'interval' => $v['interval'],
+					'timeout' => $v['timeout'],
+					'status' => $v['status'],
+					'since' => @$v['since'],
+					'opsi' => '<div class="btn-group"><a class="btn btn-sm ' . $btn[0] . '" data-id="' . $v['.id'] . '" data-status="' . $btn[2] . '"> ' . $btn[1] . '</a><a class="btn btn-sm btn-danger delete" data-id="' . $v['.id'] . '"> Hapus</a></div>'
 
-			);
-			$no++;
-		}
-		array_multisort($data_log, SORT_ASC, $log);
-		$data['recordsTotal'] = count($data_log);
-		$data['recordsFiltered'] = count($data_log);
+				);
+				$no++;
+			}
+			array_multisort($data_log, SORT_ASC, $log);
+			$data['recordsTotal'] = count($data_log);
+			$data['recordsFiltered'] = count($data_log);
 
-		$page = !empty($_GET['start']) ? (int) $_GET['start'] : 1;
-		$total = count($data_log);
-		$limit = $_GET['length'];
-		$totalPages = ceil($total / $limit);
-		$page = max($page, 1);
-		$page = min($page, $totalPages);
-		$offset = ($page - 1) * $limit;
-		if ($offset < 0) $offset = 0;
-		$data_log = array_slice($data_log, $offset, $limit);
-		if ($_GET['search']['value']) {
-			$data_log = $this->searchData($_GET['search']['value'], $data_log);
+			$page = !empty($_GET['start']) ? (int) $_GET['start'] : 1;
+			$total = count($data_log);
+			$limit = $_GET['length'];
+			$totalPages = ceil($total / $limit);
+			$page = max($page, 1);
+			$page = min($page, $totalPages);
+			$offset = ($page - 1) * $limit;
+			if ($offset < 0) $offset = 0;
+			$data_log = array_slice($data_log, $offset, $limit);
+			if ($_GET['search']['value']) {
+				$data_log = $this->searchData($_GET['search']['value'], $data_log);
+			}
 		}
 		$data['data'] =  $data_log;
 		echo json_encode($data);

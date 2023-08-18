@@ -87,6 +87,8 @@
 			</div>
 		</div>
 	</div>
+
+
 	<script src="<?= base_url() ?>assets/sbadmin/vendor/datatables/jquery.dataTables.min.js"></script>
 	<script src="<?= base_url() ?>assets/sbadmin/vendor/datatables/dataTables.bootstrap4.min.js"></script>
 	<script>
@@ -165,6 +167,8 @@
 					success: function(response) {
 						$('#ip-host-success').html('<b>' + ip + '</b>');
 						$('#show-modal-success').modal('show');
+						table.ajax.reload(null, false);
+						$('#show-form').modal('hide');
 
 					}
 				});

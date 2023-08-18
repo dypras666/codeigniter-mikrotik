@@ -59,35 +59,69 @@
 <!-- <script src="<?= base_url() ?>assets/sbadmin/js/demo/chart-area-demo.js"></script>
     <script src="<?= base_url() ?>assets/sbadmin/js/demo/chart-pie-demo.js"></script> -->
 
-<script src="https://www.gstatic.com/firebasejs/3.7.2/firebase.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.23.0/firebase.js"></script>
 <script>
-	// Initialize Firebase
-	var config = {
+	var firebaseConfig = {
 		apiKey: "<?= $this->config->item('key') ?>",
 		authDomain: "<?= $this->config->item('firebase_domain') ?>",
 		databaseURL: "<?= $this->config->item('firebase_database') ?>",
+		projectId: "<?= $this->config->item('firebase_projectID') ?>",
 		storageBucket: "<?= $this->config->item('firebase_bucket') ?>",
-		messagingSenderId: "<?= $this->config->item('firebase_sender') ?>"
+		messagingSenderId: "<?= $this->config->item('firebase_sender') ?>",
+		appId: "<?= $this->config->item('firebase_appid') ?>",
+		measurementId: "<?= $this->config->item('firebase_measure') ?>"
 	};
-	firebase.initializeApp(config);
-
+	// measurementId: G-R1KQTR3JBN
+	// Initialize Firebase
+	firebase.initializeApp(firebaseConfig);
 	const messaging = firebase.messaging();
+	initFirebaseMessagingRegistration()
 
-	messaging.requestPermission()
-		.then(function() {
-			console.log('Notification permission granted.');
-			return messaging.getToken();
-		})
-		.then(function(token) {
-			console.log(token); // Display user token
-		})
-		.catch(function(err) { // Happen if user deney permission
-			console.log('Unable to get permission to notify.', err);
-		});
+	function initFirebaseMessagingRegistration() {
+		messaging
+			.requestPermission()
+			.then(function() {
+				return messaging.getToken()
+			})
+			.then(function(token) {
+				console.log(token);
+
+				$.ajaxSetup({
+					headers: {
+						'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+					}
+				});
+
+				$.ajax({
+					url: '<?= base_url('setting/save_token') ?>',
+					type: 'POST',
+					data: {
+						firebase_token: token
+
+					},
+					dataType: 'JSON',
+					success: function(response) {
+						// alert('Token saved successfully.');
+					},
+					error: function(err) {
+						// alert('User Chat Token Error' + err);
+					},
+				});
+
+			}).catch(function(err) {
+				alert(err);
+			});
+	}
+
 
 	messaging.onMessage(function(payload) {
-		console.log('onMessage', payload);
-	})
+		const noteTitle = payload.notification.title;
+		const noteOptions = {
+			body: payload.notification.body,
+			icon: payload.notification.icon,
+		};
+		new Notification(noteTitle, noteOptions);
+	});
 
 	if (localStorage.collapsed_menu === "true") {
 		$('body').addClass('sidebar-toggled');
@@ -113,9 +147,20 @@
 
 	}
 
+	function copy() {
+		// Get the text field
+		var copyText = document.getElementById("fb-token-header");
 
-	// body sidebar-toggled
-	// #accordionSidebar
+		// Select the text field
+		copyText.select();
+		copyText.setSelectionRange(0, 99999); // For mobile devices
+
+		// Copy the text inside the text field
+		navigator.clipboard.writeText(copyText.value);
+
+		// Alert the copied text
+		alert("Token berhasil di salin: " + copyText.value);
+	}
 </script>
 </body>
 

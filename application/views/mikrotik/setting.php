@@ -69,6 +69,12 @@
 								<span>untuk push notifikasi aplikasi desktop dan mobile</span>
 								<hr>
 							</div>
+							<div class="col-md-12">
+								<div class="form-group">
+									<label>Server API</label>
+									<input type="text" value="<?= $this->config->item('server_api') ?>" name="server_api" class="form-control">
+								</div>
+							</div>
 							<div class="col-md-3">
 								<div class="form-group">
 									<label>Key</label>

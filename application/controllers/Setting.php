@@ -12,6 +12,30 @@ class Setting extends CI_Controller
 			redirect('auth/login');
 		}
 	}
+
+	public function read_token()
+	{
+		$filename = 'token_push.txt';
+		$f = fopen($filename, 'r');
+
+		if ($f) {
+			$contents = fread($f, filesize($filename));
+			fclose($f);
+			echo nl2br($contents);
+		}
+	}
+
+	function save_token()
+	{
+		if ($this->input->post('firebase_token')) {
+			$token = $this->session->set_userdata('firebase_token', $this->input->post('firebase_token'));
+			$myfile = fopen("token_push.txt", "w") or die("Unable to open file!");
+			fwrite($myfile, $this->input->post('firebase_token'));
+			fclose($myfile);
+
+			echo json_encode(['token' =>  $this->session->userdata('firebase_token')]);
+		}
+	}
 	public function index()
 	{
 		if ($this->input->post()) {
@@ -23,6 +47,10 @@ defined('BASEPATH') or exit('No direct script access allowed'); \n\n";
 			$newcontent .= "\n //firebase setting \n";
 			if ($this->input->post('key')) {
 				$newcontent .= '$config["key"] = "' . $this->input->post('key') . '" ; ';
+				$newcontent .= "\n";
+			}
+			if ($this->input->post('server_api')) {
+				$newcontent .= '$config["server_api"] = "' . $this->input->post('server_api') . '" ; ';
 				$newcontent .= "\n";
 			}
 			if ($this->input->post('fcm_url')) {
@@ -67,6 +95,10 @@ defined('BASEPATH') or exit('No direct script access allowed'); \n\n";
 				$newcontent .= '$config["ip_aplikasi"] = "' . $this->input->post('ip_aplikasi') . '" ; ';
 				$newcontent .= "\n";
 			}
+			if ($this->input->post('folder_aplikasi')) {
+				$newcontent .= '$config["folder_aplikasi"] = "' . $this->input->post('folder_aplikasi') . '" ; ';
+				$newcontent .= "\n";
+			}
 			if ($this->input->post('mikrotik_ip')) {
 				$newcontent .= '$config["mikrotik_ip"] = "' . $this->input->post('mikrotik_ip') . '" ; ';
 				$newcontent .= "\n";
@@ -107,5 +139,38 @@ defined('BASEPATH') or exit('No direct script access allowed'); \n\n";
 			$this->load->view('mikrotik/setting', $data);
 			$this->load->view('template_sbadmin/footer', $data);
 		}
+	}
+
+	function send()
+	{
+		header('Content-Type: application/json');
+		$firebaseToken = $this->read_token();
+		$SERVER_API_KEY = $this->config->item('server_api');
+
+		$data = [
+			"registration_ids" => [$firebaseToken],
+			"notification" => [
+				"title" => $this->input->get('title'),
+				"body" =>  $this->input->get('text'),
+			]
+		];
+		$dataString = json_encode($data);
+
+		$headers = [
+			'Authorization: key=' . $SERVER_API_KEY,
+			'Content-Type: application/json',
+		];
+
+		$ch = curl_init();
+
+		curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
+
+		$response = curl_exec($ch);
+		echo json_encode($response);
 	}
 }

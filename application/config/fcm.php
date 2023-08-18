@@ -4,6 +4,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 //firebase setting 
 $config["key"] = "AIzaSyDKV6LBoajV3fSUeIe8J1xvS6Hc4LbVoX4";
+$config["server_api"] = "AAAAiGH35Sc:APA91bFJ3_C9BF6HBY8nuJnZtAQFqkZg5chrSVTVxIIt0IcJUPqzxAgqBU_y5p-QoF9hrmWmeCpNEx5boAM7Oon8xzYQus88bRYTJVlQf2MCLQDzaICXYB30fkA4P-k02GmJoRfQddDu";
 $config["fcm_url"] = "https://fcm.googleapis.com/fcm/send";
 $config["firebase_domain"] = "mikrotik-98046.firebaseapp.com";
 $config["firebase_database"] = "https://mikrotik-98046-default-rtdb.asia-southeast1.firebasedatabase.app/";
@@ -16,7 +17,7 @@ $config["firebase_measure"] = "G-9KB6DRCFF5";
 
 //mikrotik 
 $config["ip_aplikasi"] = "192.168.88.15";
-$config["folder_aplikasi"] = "codeigniter-mikrotik-master";
+$config["folder_aplikasi"] = "citoring";
 $config["mikrotik_ip"] = "192.168.88.1";
 $config["mikrotik_port"] = 8728;
 $config["mikrotik_user"] = "admin";

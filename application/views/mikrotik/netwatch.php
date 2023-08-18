@@ -16,7 +16,7 @@
 								<th scope="col" width="10">NO</th>
 								<th scope="col">Host</th>
 								<th scope="col">Interval</th>
-								<th scope="col">Timout</th>
+								<th scope="col">Timeout</th>
 								<th scope="col">Status</th>
 								<th scope="col">Waktu</th>
 								<th scope="col">Opsi</th>
@@ -123,6 +123,24 @@
 				success: function(response) {
 					$(".modal-title").html('Berhasil ');
 					$(".modal-body").html('Perangkat dinonaktifkan dari notifikasi ');
+					table.ajax.reload(null, false);
+					$('#show-modal-success').modal('show');
+
+				}
+			});
+		});
+
+		$('body').on('click', '.delete', function() {
+			var id = $(this).data('id');
+			$.ajax({
+				url: '<?= base_url('router/netwatch_delete') ?>',
+				type: 'post',
+				data: {
+					id: id,
+				},
+				success: function(response) {
+					$(".modal-title").html('Berhasil dihapus ');
+					$(".modal-body").html('Perangkat dihapus dari notifikasi ');
 					table.ajax.reload(null, false);
 					$('#show-modal-success').modal('show');
 
