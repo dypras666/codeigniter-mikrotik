@@ -560,6 +560,13 @@ class Router extends CI_Controller
 		$no = 0;
 		// var_dump($log);
 		foreach ($log as $v) {
+			$query_dhcp = (new Query('/tool/netwatch/print'))->where('host', $v['address']);
+			$cek_netwatch = $this->connect()->query($query_dhcp)->read();
+			if (count($cek_netwatch) > 0) {
+				$btn = '<a class="btn btn-sm btn-danger remove-monitoring" data-id="' . $cek_netwatch[0]['.id'] . '" data-ip="' . $v['address'] . '"><i class="fa fa-minus-circle"></i> hapus</a>';
+			} else {
+				$btn = '<a class="btn btn-sm btn-primary add-monitoring" data-ip="' . $v['address'] . '"><i class="fa fa-plus-circle"></i> monitoring</a>';
+			}
 			$data_log[] = array(
 				'no' => $no + 1,
 				'address' => $v['address'],
@@ -569,7 +576,7 @@ class Router extends CI_Controller
 				'host-name' => @$v['host-name'],
 				'status' => $v['status'],
 				'dynamic' => $v['dynamic'],
-				'opsi' => '<a class="btn btn-sm btn-primary add-monitoring" data-ip="' . $v['address'] . '"><i class="fa fa-plus-circle"></i> monitoring</a>'
+				'opsi' => $btn
 
 			);
 			$no++;

@@ -70,9 +70,9 @@
 
 		});
 
-		// setInterval(function() {
-		// 	table.ajax.reload(null, false);
-		// }, 1000);
+		setInterval(function() {
+			table.ajax.reload(null, false);
+		}, 10000);
 
 		$(document).ready(function() {
 

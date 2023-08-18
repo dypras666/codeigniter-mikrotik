@@ -8,6 +8,9 @@
 			<div class="alert alert-info">
 				Klik <a class="btn btn-sm btn-primary disabled"><i class="fa fa-plus-circle"></i> monitoring</a> untuk menambahkan perangkat ke daftar notifikasi
 			</div>
+			<div class="alert alert-danger">
+				Klik <a class="btn btn-sm btn-danger disabled"><i class="fa fa-minus-circle"></i> monitoring</a> untuk menghapus perangkat ke daftar notifikasi
+			</div>
 			<div class="card shadow mb-4">
 
 				<div class="card-body table-responsive">
@@ -148,6 +151,26 @@
 				$('#ip-host').html(ip);
 				$('#ip-hosts').html('<b>' + ip + '</b>');
 				$('#val-ip').val(ip);
+			});
+
+
+			$('body').on('click', '.remove-monitoring', function() {
+				var id = $(this).data('id');
+				var ip = $(this).data('ip');
+				$.ajax({
+					url: '<?= base_url('router/netwatch_delete') ?>',
+					type: 'post',
+					data: {
+						id: id
+					},
+					success: function(response) {
+						$('#ip-host-success').html('<b>' + ip + '</b>');
+						$('#show-modal-success').modal('show');
+						table.ajax.reload(null, false);
+						$('#show-form').modal('hide');
+
+					}
+				});
 			});
 
 			$('body').on('click', '.proses-monitoring', function() {

@@ -7,10 +7,6 @@ class Setting extends CI_Controller
 	{
 		parent::__construct();
 		$this->load->config('fcm');
-		$this->load->model('auth_model');
-		if (!$this->auth_model->current_user()) {
-			redirect('auth/login');
-		}
 	}
 
 	public function read_token()
@@ -21,7 +17,7 @@ class Setting extends CI_Controller
 		if ($f) {
 			$contents = fread($f, filesize($filename));
 			fclose($f);
-			echo nl2br($contents);
+			return nl2br($contents);
 		}
 	}
 
@@ -38,6 +34,10 @@ class Setting extends CI_Controller
 	}
 	public function index()
 	{
+		$this->load->model('auth_model');
+		if (!$this->auth_model->current_user()) {
+			redirect('auth/login');
+		}
 		if ($this->input->post()) {
 			$file = FCPATH . '/application/config/fcm.php';
 			$content = file_get_contents($file);
