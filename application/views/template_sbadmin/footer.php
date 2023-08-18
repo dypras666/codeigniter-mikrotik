@@ -77,6 +77,7 @@
 	const messaging = firebase.messaging();
 	initFirebaseMessagingRegistration()
 
+
 	function initFirebaseMessagingRegistration() {
 		messaging
 			.requestPermission()
@@ -148,18 +149,11 @@
 	}
 
 	function copy() {
-		// Get the text field
 		var copyText = document.getElementById("fb-token-header");
-
-		// Select the text field
 		copyText.select();
-		copyText.setSelectionRange(0, 99999); // For mobile devices
-
-		// Copy the text inside the text field
+		copyText.setSelectionRange(0, 99999);
 		navigator.clipboard.writeText(copyText.value);
-
-		// Alert the copied text
-		alert("Token berhasil di salin: " + copyText.value);
+		alert("Token : " + copyText.value);
 	}
 </script>
 </body>

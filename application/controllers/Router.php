@@ -263,8 +263,8 @@ class Router extends CI_Controller
 		$hotspot_users = $this->connect()->query($query)->read();
 
 		$no = 0;
-		$data_log = array();
-		if (count($log) > 0) {
+		$data_internet = array();
+		if (count($hotspot_users) > 0) {
 			foreach ($hotspot_users as $user) {
 				$btn_update = $user['disabled'] == 'true' ? '<a class="btn btn-sm btn-success" href="' . base_url('router/hotspot_user_enable/' . $user['.id']) . '">Enable</a>' : '<a class="btn btn-sm btn-warning" href="' . base_url('router/hotspot_user_disable/' . $user['.id']) . '"> Disable</a>';
 

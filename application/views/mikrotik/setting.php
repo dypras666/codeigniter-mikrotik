@@ -24,13 +24,20 @@
 									<input type="text" value="<?= $this->config->item('ip_aplikasi') ?>" name="ip_aplikasi" class="form-control">
 								</div>
 							</div>
-
 							<div class="col-md-6">
 								<div class="form-group">
 									<label>Folder aplikasi </label>
 									<input type="text" value="<?= $this->config->item('folder_aplikasi') ?>" name="folder_aplikasi" class="form-control">
 								</div>
 							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>TIMEZONE</label>
+									<input type="text" value="<?= $this->config->item('timezone') ?? "date_default_timezone_set('Asia/Jakarta');" ?>" name="timezone" class="form-control">
+								</div>
+							</div>
+
+
 
 
 							<div class="col-md-3">

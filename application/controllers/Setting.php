@@ -48,6 +48,7 @@ class Setting extends CI_Controller
 			$newcontent = "<?php
 defined('BASEPATH') or exit('No direct script access allowed'); \n\n";
 
+			$newcontent .= "\n " . $this->input->post('timezone') . " \n";
 			$newcontent .= "\n //firebase setting \n";
 			if ($this->input->post('key')) {
 				$newcontent .= '$config["key"] = "' . $this->input->post('key') . '" ; ';
@@ -101,6 +102,10 @@ defined('BASEPATH') or exit('No direct script access allowed'); \n\n";
 			}
 			if ($this->input->post('folder_aplikasi')) {
 				$newcontent .= '$config["folder_aplikasi"] = "' . $this->input->post('folder_aplikasi') . '" ; ';
+				$newcontent .= "\n";
+			}
+			if ($this->input->post('timezone')) {
+				$newcontent .= '$config["timezone"] = "' . $this->input->post('timezone') . '" ; ';
 				$newcontent .= "\n";
 			}
 			if ($this->input->post('mikrotik_ip')) {
@@ -187,6 +192,20 @@ defined('BASEPATH') or exit('No direct script access allowed'); \n\n";
 
 		$response = curl_exec($ch);
 		echo json_encode($response);
+	}
+
+	function tes()
+	{
+
+		header('Content-Type: application/json');
+		$data = array(
+			'ip' => $data_push['ip'],
+			'perangkat' => $data_push['comment'],
+			'body' => $data_push['body'],
+			'status' => $data_push['status'],
+			'datetime' => date('Y-m-d h:i:s'),
+		);
+		echo json_encode($data);
 	}
 
 	// Insert to firebase
