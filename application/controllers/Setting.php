@@ -1,5 +1,9 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
+
+use Firebase\Firebase;
+use Firebase\Criteria;
+
 class Setting extends CI_Controller
 {
 
@@ -144,6 +148,17 @@ defined('BASEPATH') or exit('No direct script access allowed'); \n\n";
 	function send()
 	{
 		header('Content-Type: application/json');
+		$stat = explode("_", $this->input->get('title'));
+		$data_push = array(
+			'ip' => $this->input->get('ip'),
+			'comment' => $this->input->get('comment'),
+			'status' => $stat[0],
+			'body' => $this->input->get('text')
+		);
+
+		$this->save_status_monitoring($data_push);
+
+
 		$firebaseToken = $this->read_token();
 		$SERVER_API_KEY = $this->config->item('server_api');
 
@@ -172,5 +187,53 @@ defined('BASEPATH') or exit('No direct script access allowed'); \n\n";
 
 		$response = curl_exec($ch);
 		echo json_encode($response);
+	}
+
+	// Insert to firebase
+	public function save_status_monitoring($data_push = array())
+	{
+
+		$data = array(
+			'ip' => $data_push['ip'],
+			'perangkat' => $data_push['comment'],
+			'body' => $data_push['body'],
+			'status' => $data_push['status'],
+			'datetime' => date('Y-m-d h:i:s'),
+		);
+
+		$fb = Firebase::initialize($this->config->item('firebase_database'), $this->config->item('firebase_api'));
+		$a = $fb->push('/monitoring/' . $data_push['status'], $data);
+		return json_encode($a);
+	}
+
+	public function get_data($status)
+	{
+		error_reporting(0);
+		// header('Content-Type: application/json');
+		$fb = Firebase::initialize($this->config->item('firebase_database'), $this->config->item('firebase_api'));
+		$data = array();
+		$fetch = $fb->get('/monitoring/' . $status);
+		foreach ($fetch as $v) {
+			$data[] = array(
+				'ip' => $v['ip'],
+				'perangkat' => $v['perangkat'],
+				'status' => $v['status'],
+				'body' => $v['body'],
+				'datetime' => $v['datetime'],
+			);
+		}
+		return $data;
+	}
+
+	function count_data($status)
+	{
+		header('Content-Type: application/json');
+		$arr = array();
+		$total = 0;
+		foreach ($this->get_data($status) as $key => $item) {
+			$arr[] = $item;
+		}
+		ksort($arr, SORT_NUMERIC);
+		echo json_encode(count($arr));
 	}
 }
