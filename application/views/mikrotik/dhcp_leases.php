@@ -49,7 +49,7 @@
 					Perangkat <span id="ip-hosts"></span> akan ditambahkan ke daftar notifikasi monitoring jaringan?
 					<hr>
 					<div class="form-group">
-						<label>Komentar</label>
+						<label>NAMA PERANGKAT/HOST</label>
 						<input type="text" class="form-control" id="comment" value="">
 					</div>
 					<div class="form-group">
@@ -188,10 +188,10 @@
 						comment: comment,
 					},
 					success: function(response) {
+						$('#show-form').modal('hide');
 						$('#ip-host-success').html('<b>' + ip + '</b>');
 						$('#show-modal-success').modal('show');
 						table.ajax.reload(null, false);
-						$('#show-form').modal('hide');
 
 					}
 				});

@@ -81,9 +81,18 @@ class Router extends CI_Controller
 		$this->load->view('template_sbadmin/footer', $data);
 	}
 
+	public function show_gangguan()
+	{
+		$data = array();
+		$this->load->view('template_sbadmin/header', $data);
+		$this->load->view('template_sbadmin/sidebar', $data);
+		$this->load->view('template_sbadmin/menu', $data);
+		$this->load->view('mikrotik/gangguan', $data);
+		$this->load->view('template_sbadmin/footer', $data);
+	}
+
 	public function bandwidth()
 	{
-		$connect = $this->connect;
 		$data = array();
 		$this->load->view('template_sbadmin/header', $data);
 		$this->load->view('template_sbadmin/sidebar', $data);
@@ -254,43 +263,46 @@ class Router extends CI_Controller
 		$hotspot_users = $this->connect()->query($query)->read();
 
 		$no = 0;
-		foreach ($hotspot_users as $user) {
-			$btn_update = $user['disabled'] == 'true' ? '<a class="btn btn-sm btn-success" href="' . base_url('router/hotspot_user_enable/' . $user['.id']) . '">Enable</a>' : '<a class="btn btn-sm btn-warning" href="' . base_url('router/hotspot_user_disable/' . $user['.id']) . '"> Disable</a>';
+		$data_log = array();
+		if (count($log) > 0) {
+			foreach ($hotspot_users as $user) {
+				$btn_update = $user['disabled'] == 'true' ? '<a class="btn btn-sm btn-success" href="' . base_url('router/hotspot_user_enable/' . $user['.id']) . '">Enable</a>' : '<a class="btn btn-sm btn-warning" href="' . base_url('router/hotspot_user_disable/' . $user['.id']) . '"> Disable</a>';
 
 
-			$btn = "<div class='btn-group'>
+				$btn = "<div class='btn-group'>
 			<a class='btn btn-sm btn-primary' href='" . base_url('router/hotspot_user_edit/' . $user['.id']) . "'>Update</a>
 			$btn_update 
 			<a class='btn btn-sm btn-danger' href='" . base_url('router/hotspot_user_delete/' . $user['.id']) . "'>Delete</a>
 			</div>";
 
 
-			$data_internet[] = array(
-				'no' => $no + 1,
-				'server' => @$user['server'],
-				'name' => @$user['name'],
-				'password' => @$user['password'],
-				'mac-address'	=> @$user['mac-address'],
-				'profile' => @$user['profile'],
-				'comment' => @$user['comment'],
-				'opsi' => $btn
-			);
-			$no++;
-		}
-		$data['recordsTotal'] = count($data_internet);
-		$data['recordsFiltered'] = count($data_internet);
+				$data_internet[] = array(
+					'no' => $no + 1,
+					'server' => @$user['server'],
+					'name' => @$user['name'],
+					'password' => @$user['password'],
+					'mac-address'	=> @$user['mac-address'],
+					'profile' => @$user['profile'],
+					'comment' => @$user['comment'],
+					'opsi' => $btn
+				);
+				$no++;
+			}
+			$data['recordsTotal'] = count($data_internet);
+			$data['recordsFiltered'] = count($data_internet);
 
-		$page = !empty($_GET['start']) ? (int) $_GET['start'] : 1;
-		$total = count($data_internet);
-		$limit = $_GET['length'];
-		$totalPages = ceil($total / $limit);
-		$page = max($page, 1);
-		$page = min($page, $totalPages);
-		$offset = ($page - 1) * $limit;
-		if ($offset < 0) $offset = 0;
-		$data_internet = array_slice($data_internet, $offset, $limit);
-		if ($_GET['search']['value']) {
-			$data_internet = $this->searchData($_GET['search']['value'], $data_internet);
+			$page = !empty($_GET['start']) ? (int) $_GET['start'] : 1;
+			$total = count($data_internet);
+			$limit = $_GET['length'];
+			$totalPages = ceil($total / $limit);
+			$page = max($page, 1);
+			$page = min($page, $totalPages);
+			$offset = ($page - 1) * $limit;
+			if ($offset < 0) $offset = 0;
+			$data_internet = array_slice($data_internet, $offset, $limit);
+			if ($_GET['search']['value']) {
+				$data_internet = $this->searchData($_GET['search']['value'], $data_internet);
+			}
 		}
 		$data['data'] =  $data_internet;
 		echo json_encode($data);
@@ -323,42 +335,47 @@ class Router extends CI_Controller
 		$query = (new Query('/interface/print'));
 		$interface = $this->connect()->query($query)->read();
 		$no = 0;
-		foreach ($interface as $v) {
-			$eth = (new Query('/interface/monitor-traffic'))
-				->equal('interface', $v['name'])
-				->equal('once');
-			$network = $this->connect()->query($eth)->read();
-			if ($network[0]['rx-bits-per-second'] <= 0 &&  $network[0]['tx-bits-per-second'] <= 0) {
-				$name = '<span class="text-danger">' . $v['name'] . '</span>';
-			} elseif ($network[0]['rx-bits-per-second'] <= 0 || $network[0]['tx-bits-per-second'] <= 0) {
-				$name = '<span class="text-warning">' . $v['name'] . '</span>';
-			} else {
-				$name = '<span class="text-success">' . $v['name'] . '</span>';
+		$data_log = array();
+		if (
+			count($interface) > 0
+		) {
+			foreach ($interface as $v) {
+				$eth = (new Query('/interface/monitor-traffic'))
+					->equal('interface', $v['name'])
+					->equal('once');
+				$network = $this->connect()->query($eth)->read();
+				if ($network[0]['rx-bits-per-second'] <= 0 &&  $network[0]['tx-bits-per-second'] <= 0) {
+					$name = '<span class="text-danger">' . $v['name'] . '</span>';
+				} elseif ($network[0]['rx-bits-per-second'] <= 0 || $network[0]['tx-bits-per-second'] <= 0) {
+					$name = '<span class="text-warning">' . $v['name'] . '</span>';
+				} else {
+					$name = '<span class="text-success">' . $v['name'] . '</span>';
+				}
+				$warna =
+					$data_internet[] = array(
+						'no' => $no + 1,
+						'name' => $name,
+						'rx' => formatBytes($network[0]['rx-bits-per-second']),
+						'tx' => formatBytes($network[0]['tx-bits-per-second']),
+
+					);
+				$no++;
 			}
-			$warna =
-				$data_internet[] = array(
-					'no' => $no + 1,
-					'name' => $name,
-					'rx' => formatBytes($network[0]['rx-bits-per-second']),
-					'tx' => formatBytes($network[0]['tx-bits-per-second']),
+			$data['recordsTotal'] = count($data_internet);
+			$data['recordsFiltered'] = count($data_internet);
 
-				);
-			$no++;
-		}
-		$data['recordsTotal'] = count($data_internet);
-		$data['recordsFiltered'] = count($data_internet);
-
-		$page = !empty($_GET['start']) ? (int) $_GET['start'] : 1;
-		$total = count($data_internet);
-		$limit = $_GET['length'];
-		$totalPages = ceil($total / $limit);
-		$page = max($page, 1);
-		$page = min($page, $totalPages);
-		$offset = ($page - 1) * $limit;
-		if ($offset < 0) $offset = 0;
-		$data_internet = array_slice($data_internet, $offset, $limit);
-		if ($_GET['search']['value']) {
-			$data_internet = $this->searchData($_GET['search']['value'], $data_internet);
+			$page = !empty($_GET['start']) ? (int) $_GET['start'] : 1;
+			$total = count($data_internet);
+			$limit = $_GET['length'];
+			$totalPages = ceil($total / $limit);
+			$page = max($page, 1);
+			$page = min($page, $totalPages);
+			$offset = ($page - 1) * $limit;
+			if ($offset < 0) $offset = 0;
+			$data_internet = array_slice($data_internet, $offset, $limit);
+			if ($_GET['search']['value']) {
+				$data_internet = $this->searchData($_GET['search']['value'], $data_internet);
+			}
 		}
 		$data['data'] =  $data_internet;
 		echo json_encode($data);
@@ -369,30 +386,33 @@ class Router extends CI_Controller
 		$query = (new Query('/log/print'));
 		$log = $this->connect()->query($query)->read();
 		$no = 0;
-		foreach ($log as $v) {
-			$data_log[] = array(
-				'id' => $no,
-				'time' => $v['time'],
-				'topics' => $v['topics'],
-				'message' => $v['message'],
+		$data_log = array();
+		if (count($log) > 0) {
+			foreach ($log as $v) {
+				$data_log[] = array(
+					'id' => $no,
+					'time' => $v['time'],
+					'topics' => $v['topics'],
+					'message' => $v['message'],
 
-			);
-			$no++;
-		}
-		array_multisort($data_log, SORT_DESC, $log);
-		$data['recordsTotal'] = count($data_log);
-		$data['recordsFiltered'] = count($data_log);
-		$page = !empty($_GET['start']) ? (int) $_GET['start'] : 1;
-		$total = count($data_log);
-		$limit = $_GET['length'];
-		$totalPages = ceil($total / $limit);
-		$page = max($page, 1);
-		$page = min($page, $totalPages);
-		$offset = ($page - 1) * $limit;
-		if ($offset < 0) $offset = 0;
-		$data_log = array_slice($data_log, $offset, $limit);
-		if ($_GET['search']['value']) {
-			$data_log = $this->searchData($_GET['search']['value'], $data_log);
+				);
+				$no++;
+			}
+			array_multisort($data_log, SORT_DESC, $log);
+			$data['recordsTotal'] = count($data_log);
+			$data['recordsFiltered'] = count($data_log);
+			$page = !empty($_GET['start']) ? (int) $_GET['start'] : 1;
+			$total = count($data_log);
+			$limit = $_GET['length'];
+			$totalPages = ceil($total / $limit);
+			$page = max($page, 1);
+			$page = min($page, $totalPages);
+			$offset = ($page - 1) * $limit;
+			if ($offset < 0) $offset = 0;
+			$data_log = array_slice($data_log, $offset, $limit);
+			if ($_GET['search']['value']) {
+				$data_log = $this->searchData($_GET['search']['value'], $data_log);
+			}
 		}
 		$data['data'] =  $data_log;
 		echo json_encode($data);
@@ -405,44 +425,47 @@ class Router extends CI_Controller
 		$query = (new Query('/ip/hotspot/user/profile/print'));
 		$log = $this->connect()->query($query)->read();
 		$no = 1;
-		foreach ($log as $v) {
+		$data_log = array();
+		if (count($log) > 0) {
+			foreach ($log as $v) {
 
-			$btn = "<div class='btn-group'>
+				$btn = "<div class='btn-group'>
 			<a class='btn btn-sm btn-primary' href='" . base_url('router/hotspot_profile_update/' . $v['.id']) . "'>Update</a> 
 			<a class='btn btn-sm btn-danger' href='" . base_url('router/hotspot_profile_delete/' . $v['.id']) . "'>Delete</a>
 			</div>";
-			$data_log[] = array(
-				'id' => $no,
-				'name' => @$v['name'],
-				'idle-timeout' => @$v['idle-timeout'],
-				'keepalive-timeout' => @$v['keepalive-timeout'],
-				'shared-users' => @$v['shared-users'],
-				'rate-limit' => @$v['rate-limit'],
-				// 'smtp-server' => @$v['smtp-server'], 
-				// 'login-by' => @$v['login-by'], 
-				// 'http-cookie-lifetime' => @$v['http-cookie-lifetime'], 
-				// 'split-user-domain' => @$v['split-user-domain'], 
-				// 'use-radius' => @$v['use-radius'], 
-				// 'default' => @$v['default'], 
-				'button' => $btn
+				$data_log[] = array(
+					'id' => $no,
+					'name' => @$v['name'],
+					'idle-timeout' => @$v['idle-timeout'],
+					'keepalive-timeout' => @$v['keepalive-timeout'],
+					'shared-users' => @$v['shared-users'],
+					'rate-limit' => @$v['rate-limit'],
+					// 'smtp-server' => @$v['smtp-server'], 
+					// 'login-by' => @$v['login-by'], 
+					// 'http-cookie-lifetime' => @$v['http-cookie-lifetime'], 
+					// 'split-user-domain' => @$v['split-user-domain'], 
+					// 'use-radius' => @$v['use-radius'], 
+					// 'default' => @$v['default'], 
+					'button' => $btn
 
-			);
-			$no++;
-		}
-		array_multisort($data_log, SORT_DESC, $log);
-		$data['recordsTotal'] = count($data_log);
-		$data['recordsFiltered'] = count($data_log);
-		$page = !empty($_GET['start']) ? (int) $_GET['start'] : 1;
-		$total = count($data_log);
-		$limit = $_GET['length'];
-		$totalPages = ceil($total / $limit);
-		$page = max($page, 1);
-		$page = min($page, $totalPages);
-		$offset = ($page - 1) * $limit;
-		if ($offset < 0) $offset = 0;
-		$data_log = array_slice($data_log, $offset, $limit);
-		if ($_GET['search']['value']) {
-			$data_log = $this->searchData($_GET['search']['value'], $data_log);
+				);
+				$no++;
+			}
+			array_multisort($data_log, SORT_DESC, $log);
+			$data['recordsTotal'] = count($data_log);
+			$data['recordsFiltered'] = count($data_log);
+			$page = !empty($_GET['start']) ? (int) $_GET['start'] : 1;
+			$total = count($data_log);
+			$limit = $_GET['length'];
+			$totalPages = ceil($total / $limit);
+			$page = max($page, 1);
+			$page = min($page, $totalPages);
+			$offset = ($page - 1) * $limit;
+			if ($offset < 0) $offset = 0;
+			$data_log = array_slice($data_log, $offset, $limit);
+			if ($_GET['search']['value']) {
+				$data_log = $this->searchData($_GET['search']['value'], $data_log);
+			}
 		}
 		$data['data'] =  $data_log;
 		echo json_encode($data);
@@ -453,48 +476,51 @@ class Router extends CI_Controller
 		$query = (new Query('/ip/hotspot/user/profile/getall'));
 		$log = $this->connect()->query($query)->read();
 		$no = 1;
-		foreach ($log as $v) {
-			$btn_update = @$v['default'] == 'false' ? '<a class="btn btn-sm btn-sucess" href="' . base_url('router/hotspot_server_enable/' . $v['.id']) . '">Enable</a>' :  '<a class="btn btn-sm btn-warning" href="' . base_url('router/hotspot_server_disable/' . $v['.id']) . '">Disable</a>';
+		$data_log = array();
+		if (count($log) > 0) {
+			foreach ($log as $v) {
+				$btn_update = @$v['default'] == 'false' ? '<a class="btn btn-sm btn-sucess" href="' . base_url('router/hotspot_server_enable/' . $v['.id']) . '">Enable</a>' :  '<a class="btn btn-sm btn-warning" href="' . base_url('router/hotspot_server_disable/' . $v['.id']) . '">Disable</a>';
 
-			$btn = "<div class='btn-group'>
+				$btn = "<div class='btn-group'>
 			<a class='btn btn-sm btn-primary' href='" . base_url('router/hotspot_server_update/' . $v['.id']) . "'>Update</a>
 			$btn_update
 			<a class='btn btn-sm btn-danger' href='" . base_url('router/hotspot_server_delete/' . $v['.id']) . "'>Delete</a>
 			</div>";
-			$data_log[] = array(
-				'id' => $no,
-				'name' => @$v['name'],
-				// 'hotspot-address' => @$v['hotspot-address'], 
-				'dns-name' => @$v['dns-name'],
-				'html-directory' => @$v['html-directory'],
-				// 'html-directory-override' => @$v['html-directory-override'], 
-				'rate-limit' => @$v['rate-limit'],
-				// 'http-proxy' => @$v['http-proxy'], 
-				// 'smtp-server' => @$v['smtp-server'], 
-				// 'login-by' => @$v['login-by'], 
-				// 'http-cookie-lifetime' => @$v['http-cookie-lifetime'], 
-				// 'split-user-domain' => @$v['split-user-domain'], 
-				// 'use-radius' => @$v['use-radius'], 
-				// 'default' => @$v['default'], 
-				'button' => $btn
+				$data_log[] = array(
+					'id' => $no,
+					'name' => @$v['name'],
+					// 'hotspot-address' => @$v['hotspot-address'], 
+					'dns-name' => @$v['dns-name'],
+					'html-directory' => @$v['html-directory'],
+					// 'html-directory-override' => @$v['html-directory-override'], 
+					'rate-limit' => @$v['rate-limit'],
+					// 'http-proxy' => @$v['http-proxy'], 
+					// 'smtp-server' => @$v['smtp-server'], 
+					// 'login-by' => @$v['login-by'], 
+					// 'http-cookie-lifetime' => @$v['http-cookie-lifetime'], 
+					// 'split-user-domain' => @$v['split-user-domain'], 
+					// 'use-radius' => @$v['use-radius'], 
+					// 'default' => @$v['default'], 
+					'button' => $btn
 
-			);
-			$no++;
-		}
-		array_multisort($data_log, SORT_DESC, $log);
-		$data['recordsTotal'] = count($data_log);
-		$data['recordsFiltered'] = count($data_log);
-		$page = !empty($_GET['start']) ? (int) $_GET['start'] : 1;
-		$total = count($data_log);
-		$limit = $_GET['length'];
-		$totalPages = ceil($total / $limit);
-		$page = max($page, 1);
-		$page = min($page, $totalPages);
-		$offset = ($page - 1) * $limit;
-		if ($offset < 0) $offset = 0;
-		$data_log = array_slice($data_log, $offset, $limit);
-		if ($_GET['search']['value']) {
-			$data_log = $this->searchData($_GET['search']['value'], $data_log);
+				);
+				$no++;
+			}
+			array_multisort($data_log, SORT_DESC, $log);
+			$data['recordsTotal'] = count($data_log);
+			$data['recordsFiltered'] = count($data_log);
+			$page = !empty($_GET['start']) ? (int) $_GET['start'] : 1;
+			$total = count($data_log);
+			$limit = $_GET['length'];
+			$totalPages = ceil($total / $limit);
+			$page = max($page, 1);
+			$page = min($page, $totalPages);
+			$offset = ($page - 1) * $limit;
+			if ($offset < 0) $offset = 0;
+			$data_log = array_slice($data_log, $offset, $limit);
+			if ($_GET['search']['value']) {
+				$data_log = $this->searchData($_GET['search']['value'], $data_log);
+			}
 		}
 		$data['data'] =  $data_log;
 		echo json_encode($data);
@@ -558,43 +584,120 @@ class Router extends CI_Controller
 		$log = $this->connect()->query($query)->read();
 
 		$no = 0;
-		// var_dump($log);
-		foreach ($log as $v) {
-			$query_dhcp = (new Query('/tool/netwatch/print'))->where('host', $v['address']);
-			$cek_netwatch = $this->connect()->query($query_dhcp)->read();
-			if (count($cek_netwatch) > 0) {
-				$btn = '<a class="btn btn-sm btn-danger remove-monitoring" data-id="' . $cek_netwatch[0]['.id'] . '" data-ip="' . $v['address'] . '"><i class="fa fa-minus-circle"></i> hapus</a>';
-			} else {
-				$btn = '<a class="btn btn-sm btn-primary add-monitoring" data-ip="' . $v['address'] . '"><i class="fa fa-plus-circle"></i> monitoring</a>';
-			}
-			$data_log[] = array(
-				'no' => $no + 1,
-				'address' => $v['address'],
-				'mac-address' => $v['mac-address'],
-				// 'server' => $v['server'],
-				'last-seen' => $v['last-seen'],
-				'host-name' => @$v['host-name'],
-				'status' => $v['status'],
-				'dynamic' => $v['dynamic'],
-				'opsi' => $btn
+		$data_log = array();
+		if (count($log) > 0) {
+			foreach ($log as $v) {
+				$query_dhcp = (new Query('/tool/netwatch/print'))->where('host', $v['address']);
+				$cek_netwatch = $this->connect()->query($query_dhcp)->read();
+				if (count($cek_netwatch) > 0) {
+					$btn = '<a class="btn btn-sm btn-danger remove-monitoring" data-id="' . $cek_netwatch[0]['.id'] . '" data-ip="' . $v['address'] . '"><i class="fa fa-minus-circle"></i> hapus</a>';
+				} else {
+					$btn = '<a class="btn btn-sm btn-primary add-monitoring" data-ip="' . $v['address'] . '"><i class="fa fa-plus-circle"></i> monitoring</a>';
+				}
+				$data_log[] = array(
+					'no' => $no + 1,
+					'address' => $v['address'],
+					'mac-address' => $v['mac-address'],
+					// 'server' => $v['server'],
+					'last-seen' => $v['last-seen'],
+					'host-name' => @$v['host-name'],
+					'status' => $v['status'],
+					'dynamic' => $v['dynamic'],
+					'opsi' => $btn
 
-			);
-			$no++;
+				);
+				$no++;
+			}
+			array_multisort($data_log, SORT_ASC, $log);
+			$data['recordsTotal'] = count($data_log);
+			$data['recordsFiltered'] = count($data_log);
+			$page = !empty($_GET['start']) ? (int) $_GET['start'] : 1;
+			$total = count($data_log);
+			$limit = $_GET['length'];
+			$totalPages = ceil($total / $limit);
+			$page = max($page, 1);
+			$page = min($page, $totalPages);
+			$offset = ($page - 1) * $limit;
+			if ($offset < 0) $offset = 0;
+			$data_log = array_slice($data_log, $offset, $limit);
+			if ($_GET['search']['value']) {
+				$data_log = $this->searchData($_GET['search']['value'], $data_log);
+			}
 		}
-		array_multisort($data_log, SORT_ASC, $log);
-		$data['recordsTotal'] = count($data_log);
-		$data['recordsFiltered'] = count($data_log);
-		$page = !empty($_GET['start']) ? (int) $_GET['start'] : 1;
-		$total = count($data_log);
-		$limit = $_GET['length'];
-		$totalPages = ceil($total / $limit);
-		$page = max($page, 1);
-		$page = min($page, $totalPages);
-		$offset = ($page - 1) * $limit;
-		if ($offset < 0) $offset = 0;
-		$data_log = array_slice($data_log, $offset, $limit);
-		if ($_GET['search']['value']) {
-			$data_log = $this->searchData($_GET['search']['value'], $data_log);
+		$data['data'] =  $data_log;
+		echo json_encode($data);
+	}
+
+	function get_data_firebase()
+	{
+		error_reporting(0);
+		$fb = Firebase::initialize($this->config->item('firebase_database'), $this->config->item('firebase_api'));
+		$data = array();
+		foreach ($fb->get('/monitoring/UP') as $v) {
+			$data[] = array(
+				'ip' => $v['ip'],
+				'perangkat' => $v['perangkat'],
+				'status' => $v['status'],
+				'body' => $v['body'],
+				'datetime' => $v['datetime'],
+			);
+		}
+		foreach ($fb->get('/monitoring/DOWN') as $v) {
+			$data_down = array(
+				'ip' => $v['ip'],
+				'perangkat' => $v['perangkat'],
+				'status' => $v['status'],
+				'body' => $v['body'],
+				'datetime' => $v['datetime'],
+			);
+			array_push($data, $data_down);
+		}
+		function date_compare($element1, $element2)
+		{
+			$datetime1 = strtotime($element1['datetime']);
+			$datetime2 = strtotime($element2['datetime']);
+			return $datetime2 - $datetime1;
+		}
+		usort($data, 'date_compare');
+
+		return  $data;
+	}
+
+	public function dt_gangguan()
+	{
+		$log = $this->get_data_firebase();
+		$no = 0;
+		$data_log = array();
+		if (count($log) > 0) {
+			foreach ($log as $v) {
+				$data_log[] = array(
+					'no' => $no + 1,
+					'ip' => $v['ip'],
+					'perangkat' => $v['perangkat'],
+					'status' => $v['status'],
+					'body' => $v['body'],
+					'datetime' => $v['datetime'],
+
+				);
+				$no++;
+			}
+
+
+			// array_multisort($data_log, SORT_DESC, $log);
+			$data['recordsTotal'] = count($data_log);
+			$data['recordsFiltered'] = count($data_log);
+			$page = !empty($_GET['start']) ? (int) $_GET['start'] : 1;
+			$total = count($data_log);
+			$limit = $_GET['length'];
+			$totalPages = ceil($total / $limit);
+			$page = max($page, 1);
+			$page = min($page, $totalPages);
+			$offset = ($page - 1) * $limit;
+			if ($offset < 0) $offset = 0;
+			$data_log = array_slice($data_log, $offset, $limit);
+			if ($_GET['search']['value']) {
+				$data_log = $this->searchData($_GET['search']['value'], $data_log);
+			}
 		}
 		$data['data'] =  $data_log;
 		echo json_encode($data);
@@ -620,35 +723,6 @@ class Router extends CI_Controller
 		}
 		return null;
 	}
-
-
-
-	// Insert to firebase
-	public function save_stat()
-	{
-		$connect = $this->connect;
-		$fetch = $this->routerapi->comm('/interface/monitor-traffic', array(
-			'interface' => 'INTERNET',
-			'once' => ''
-		));
-		$data = array(
-			'interface' => "INTERNET",
-			'datetime' => date('Y-m-d h:i:s'),
-			'rx' => $fetch[0]["rx-bits-per-second"],
-			'tx' =>  $fetch[0]["tx-bits-per-second"]
-		);
-
-		$fb = Firebase::initialize($this->config->item('firebase_database'), $this->config->item('firebase_api'));
-		$a = $fb->push('/data', $data);
-		echo json_encode($a);
-	}
-	public function get_data()
-	{
-		$fb = Firebase::initialize($this->config->item('firebase_database'), $this->config->item('firebase_api'));
-		$a = $fb->get('/data');
-		echo json_encode($a);
-	}
-	//  ==================================================
 
 
 	public function hotspot_user_add()
@@ -895,8 +969,8 @@ class Router extends CI_Controller
 				$interval 		= $this->input->post('interval') ? $this->input->post('interval') : '00:00:10';
 				$comment 		= $this->input->post('comment');
 
-				$up_script 		= '/tool fetch "http://' . $this->config->item('ip_aplikasi') . '/' . $this->config->item('folder_aplikasi') . '/send?title=UP_' . $host . '&text=PERANGKAT_' . $host . '_UP"';
-				$down_script 	= '/tool fetch "http://' . $this->config->item('ip_aplikasi') . '/' . $this->config->item('folder_aplikasi') . '/send?title=DOWN_' . $host . '&text=PERANGKAT_' . $host . '_DOWN"';
+				$up_script 		= '/tool fetch "http://' . $this->config->item('ip_aplikasi') . '/' . $this->config->item('folder_aplikasi') . '/send?title=UP_' . $host . '&text=PERANGKAT_' . $host . '_UP&comment=' . $comment . '&ip=' . $host . '"';
+				$down_script 	= '/tool fetch "http://' . $this->config->item('ip_aplikasi') . '/' . $this->config->item('folder_aplikasi') . '/send?title=DOWN_' . $host . '&text=PERANGKAT_' . $host . '_DOWN&comment=' . $comment . '&ip=' . $host . '"';
 
 				$query = (new Query('/tool/netwatch/add'));
 				$query->equal('host', $host)
